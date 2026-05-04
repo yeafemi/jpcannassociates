@@ -34,30 +34,21 @@ jobs:
         run: |
           npm run build
           
-          # Debug: List directories to see where build output went
-          echo "Checking build output directories..."
-          ls -d dist*/ .output*/ 2>/dev/null || echo "No output directories found yet."
+          # Smart Search for index.html
+          echo "Searching for index.html..."
+          INDEX_PATH=$(find . -name "index.html" -not -path "*/node_modules/*" | head -n 1)
           
-          # Auto-detect folder
-          if [ -d "dist/client" ]; then
-            OUT_DIR="dist/client"
-          elif [ -d "dist" ]; then
-            OUT_DIR="dist"
-          elif [ -d ".output/public" ]; then
-            OUT_DIR=".output/public"
-          else
-            echo "Error: No build output directory found!"
+          if [ -z "$INDEX_PATH" ]; then
+            echo "Error: index.html not found anywhere in the build output!"
             ls -R
             exit 1
           fi
           
+          OUT_DIR=$(dirname "$INDEX_PATH")
           echo "Detected output directory: $OUT_DIR"
           
           # Copy index to 404 for SPA routing
-          if [ -f "$OUT_DIR/index.html" ]; then
-            cp "$OUT_DIR/index.html" "$OUT_DIR/404.html"
-          fi
-          
+          cp "$INDEX_PATH" "$OUT_DIR/404.html"
           echo "FINAL_OUT_DIR=$OUT_DIR" >> $GITHUB_ENV
 
       - name: Upload artifact
