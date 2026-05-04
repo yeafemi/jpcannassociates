@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createRouter, useRouter } from "@tanstack/react-router";
+import { createRouter, useRouter, createHashHistory } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
 function DefaultErrorComponent({
@@ -64,13 +64,14 @@ function DefaultErrorComponent({
 }
 
 export const getRouter = () => {
+  const hashHistory = createHashHistory();
   const router = createRouter({
     routeTree,
+    history: hashHistory,
     context: {},
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: DefaultErrorComponent,
-    basepath: "/jpcannassociates",
   });
 
   return router;
