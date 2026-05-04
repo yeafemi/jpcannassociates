@@ -25,25 +25,39 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build
         run: |
           npm run build
-          # Find the output directory
+          
+          # Debug: List directories to see where build output went
+          echo "Checking build output directories..."
+          ls -d dist*/ .output*/ 2>/dev/null || echo "No output directories found yet."
+          
+          # Auto-detect folder
           if [ -d "dist/client" ]; then
-            export OUT_DIR="dist/client"
+            OUT_DIR="dist/client"
           elif [ -d "dist" ]; then
-            export OUT_DIR="dist"
+            OUT_DIR="dist"
           elif [ -d ".output/public" ]; then
-            export OUT_DIR=".output/public"
+            OUT_DIR=".output/public"
+          else
+            echo "Error: No build output directory found!"
+            ls -R
+            exit 1
           fi
           
+          echo "Detected output directory: $OUT_DIR"
+          
           # Copy index to 404 for SPA routing
-          cp $OUT_DIR/index.html $OUT_DIR/404.html
+          if [ -f "$OUT_DIR/index.html" ]; then
+            cp "$OUT_DIR/index.html" "$OUT_DIR/404.html"
+          fi
+          
           echo "FINAL_OUT_DIR=$OUT_DIR" >> $GITHUB_ENV
 
       - name: Upload artifact
