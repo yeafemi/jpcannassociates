@@ -34,13 +34,13 @@ jobs:
         run: |
           npm run build
           
-          # Smart Search for index.html
-          echo "Searching for index.html..."
-          INDEX_PATH=$(find . -name "index.html" -not -path "*/node_modules/*" | head -n 1)
+          # Smart Search for index.html ONLY in build output folders
+          echo "Searching for built index.html..."
+          INDEX_PATH=$(find dist .output -name "index.html" 2>/dev/null | head -n 1)
           
           if [ -z "$INDEX_PATH" ]; then
-            echo "Error: index.html not found anywhere in the build output!"
-            ls -R
+            echo "Error: index.html not found in build output!"
+            ls -R dist .output 2>/dev/null
             exit 1
           fi
           
