@@ -64,10 +64,13 @@ function DefaultErrorComponent({
 }
 
 export const getRouter = () => {
-  const hashHistory = createHashHistory();
+  const history = typeof window !== "undefined" && process.env.NODE_ENV === "production" 
+    ? createHashHistory() 
+    : undefined;
+
   const router = createRouter({
     routeTree,
-    history: hashHistory,
+    history,
     context: {},
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
