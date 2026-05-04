@@ -50,6 +50,10 @@ jobs:
           OUT_DIR=$(dirname "$INDEX_PATH")
           echo "Final deployment directory: $OUT_DIR"
           
+          # Debug: Show the built index.html content
+          echo "Built index.html content:"
+          cat "$INDEX_PATH"
+          
           # Copy index to 404 for SPA routing
           cp "$INDEX_PATH" "$OUT_DIR/404.html"
           # Create .nojekyll to prevent GitHub from ignoring files starting with underscores
