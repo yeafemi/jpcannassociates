@@ -18,6 +18,9 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: "https://ozbipjoexffztrikdyjr.supabase.co"
+      VITE_SUPABASE_ANON_KEY: "sb_publishable__lF0kj6Qxq_PCAouznErGw_hONEUY6c"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,13 +37,12 @@ jobs:
         run: |
           npm run build
           
-          # Find the built index.html by looking in dist or .output folders
+          # Find the built index.html
           echo "Locating built index.html..."
           INDEX_PATH=$(find . \( -path "*/dist/*" -o -path "*/.output/*" \) -name "index.html" | head -n 1)
           
           if [ -z "$INDEX_PATH" ]; then
-            echo "Error: Could not find index.html in build output (dist or .output)."
-            echo "Listing all files for debugging:"
+            echo "Error: Could not find index.html in build output."
             find . -maxdepth 3 -not -path "*/node_modules/*"
             exit 1
           fi
@@ -50,6 +52,8 @@ jobs:
           
           # Copy index to 404 for SPA routing
           cp "$INDEX_PATH" "$OUT_DIR/404.html"
+          # Create .nojekyll to prevent GitHub from ignoring files starting with underscores
+          touch "$OUT_DIR/.nojekyll"
           echo "FINAL_OUT_DIR=$OUT_DIR" >> $GITHUB_ENV
 
       - name: Upload artifact
