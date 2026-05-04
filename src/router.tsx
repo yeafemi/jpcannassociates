@@ -70,6 +70,7 @@ export const getRouter = () => {
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     defaultErrorComponent: DefaultErrorComponent,
+    basepath: "/jpcannassociates",
   });
 
   return router;
