@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VITE_SUPABASE_URL: "https://ozbipjoexffztrikdyjr.supabase.co"
-      VITE_SUPABASE_ANON_KEY: "sb_publishable__lF0kj6Qxq_PCAouznErGw_hONEUY6c"
+      VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable__lF0kj6Qxq_PCAouznErGw_hONEUY6c"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
