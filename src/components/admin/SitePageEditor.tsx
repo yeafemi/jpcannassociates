@@ -25,7 +25,7 @@ interface SitePage {
   hero_image_url: string | null;
   seo_title: string | null;
   seo_description: string | null;
-  content: any;
+  content: Record<string, unknown>;
 }
 
 export function SitePageEditor({ pageKey }: { pageKey: string }) {

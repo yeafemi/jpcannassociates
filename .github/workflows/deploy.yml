@@ -36,24 +36,24 @@ jobs:
       - name: Build
         run: |
           npm run build
-          
+
           # Find the built index.html
           echo "Locating built index.html..."
           INDEX_PATH=$(find . \( -path "*/dist/*" -o -path "*/.output/*" \) -name "index.html" | head -n 1)
-          
+
           if [ -z "$INDEX_PATH" ]; then
             echo "Error: Could not find index.html in build output."
             find . -maxdepth 3 -not -path "*/node_modules/*"
             exit 1
           fi
-          
+
           OUT_DIR=$(dirname "$INDEX_PATH")
           echo "Final deployment directory: $OUT_DIR"
-          
+
           # Debug: Show the built index.html content
           echo "Built index.html content:"
           cat "$INDEX_PATH"
-          
+
           # Copy index to 404 for SPA routing
           cp "$INDEX_PATH" "$OUT_DIR/404.html"
           # Create .nojekyll to prevent GitHub from ignoring files starting with underscores

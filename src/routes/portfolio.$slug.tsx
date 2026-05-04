@@ -124,7 +124,9 @@ function PortfolioDetailPage() {
     (category && CATEGORY_LABELS[category]) ?? category ?? "Engagement";
   const client = typeof m.client === "string" ? m.client : null;
   const funder = typeof m.funder === "string" ? m.funder : null;
-  const date = (typeof m.year === "string" ? m.year : null) ?? (typeof m.date === "string" ? m.date : null);
+  const date =
+    (typeof m.year === "string" ? m.year : null) ??
+    (typeof m.date === "string" ? m.date : null);
   const location = typeof m.location === "string" ? m.location : null;
   const sector = typeof m.sector === "string" ? m.sector : null;
 

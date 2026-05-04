@@ -99,10 +99,10 @@ function parseTrainingDate(dateStr: string | null): Date | null {
   const lastPart = parts[parts.length - 1].trim();
   const d = new Date(lastPart);
   if (!isNaN(d.getTime())) return d;
-  
+
   const d2 = new Date(dateStr);
   if (!isNaN(d2.getTime())) return d2;
-  
+
   return null;
 }
 
@@ -112,7 +112,9 @@ function TrainingsPage() {
   const { data: trainings, isLoading } = useTrainings();
   const [area, setArea] =
     useState<(typeof THEMATIC_AREAS)[number]>("All Thematic Areas");
-  const [statusFilter, setStatusFilter] = useState<"upcoming" | "completed" | "all">("upcoming");
+  const [statusFilter, setStatusFilter] = useState<
+    "upcoming" | "completed" | "all"
+  >("upcoming");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [outlineTraining, setOutlineTraining] =
@@ -141,10 +143,10 @@ function TrainingsPage() {
     const sortedTrainings = [...trainings].sort((a, b) => {
       const dateA = parseTrainingDate(a.subtitle);
       const dateB = parseTrainingDate(b.subtitle);
-      
+
       const timeA = dateA ? dateA.getTime() : 8640000000000000;
       const timeB = dateB ? dateB.getTime() : 8640000000000000;
-      
+
       return timeA - timeB;
     });
 
@@ -161,13 +163,13 @@ function TrainingsPage() {
       if (statusFilter !== "all") {
         const tDate = parseTrainingDate(t.subtitle);
         if (!tDate) {
-           matchesStatus = statusFilter === "upcoming";
+          matchesStatus = statusFilter === "upcoming";
         } else {
-           if (statusFilter === "completed") {
-             matchesStatus = tDate < now;
-           } else if (statusFilter === "upcoming") {
-             matchesStatus = tDate >= now;
-           }
+          if (statusFilter === "completed") {
+            matchesStatus = tDate < now;
+          } else if (statusFilter === "upcoming") {
+            matchesStatus = tDate >= now;
+          }
         }
       }
 
@@ -229,7 +231,9 @@ function TrainingsPage() {
             <select
               value={statusFilter}
               onChange={(e) =>
-                setStatusFilter(e.target.value as "all" | "upcoming" | "completed")
+                setStatusFilter(
+                  e.target.value as "all" | "upcoming" | "completed",
+                )
               }
               className="h-11 min-w-[12rem] cursor-pointer rounded-md border border-border bg-background px-3 text-sm font-medium text-foreground transition-colors hover:border-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               aria-label="Filter by status"

@@ -149,7 +149,9 @@ function OutsourcingPage() {
     <SiteLayout>
       <PageHero
         eyebrow={pageData?.hero_eyebrow || "Business Process Outsourcing"}
-        title={pageData?.hero_title || "Offload the Routine. Redefine Your Focus."}
+        title={
+          pageData?.hero_title || "Offload the Routine. Redefine Your Focus."
+        }
         description={
           pageData?.hero_description ||
           "Your core business deserves your best attention—not endless paperwork or operational bottlenecks."
@@ -167,8 +169,9 @@ function OutsourcingPage() {
               </h2>
               <div className="mt-8 space-y-6 text-lg text-muted-foreground leading-relaxed">
                 <p>
-                  JPCann Associates takes ownership of your critical but non-core
-                  processes, delivering accuracy, reliability, and peace of mind.
+                  JPCann Associates takes ownership of your critical but
+                  non-core processes, delivering accuracy, reliability, and
+                  peace of mind.
                 </p>
                 <p>
                   We combine process excellence, data security, and specialized
@@ -210,11 +213,13 @@ function OutsourcingPage() {
                 delay={String(i * 0.1) as any}
                 className="group rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-xl"
               >
-                <div className={cn(
-                  "mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl transition-all group-hover:scale-110",
-                  s.bg,
-                  s.color
-                )}>
+                <div
+                  className={cn(
+                    "mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl transition-all group-hover:scale-110",
+                    s.bg,
+                    s.color,
+                  )}
+                >
                   <s.icon size={28} />
                 </div>
                 <h3 className="font-serif text-xl mb-4 font-bold">{s.title}</h3>
@@ -243,11 +248,13 @@ function OutsourcingPage() {
                 variant="up"
                 delay={String(i * 0.1) as any}
               >
-                <div className={cn(
-                  "flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform hover:scale-110",
-                  item.bg,
-                  item.color
-                )}>
+                <div
+                  className={cn(
+                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-transform hover:scale-110",
+                    item.bg,
+                    item.color,
+                  )}
+                >
                   <item.icon size={24} />
                 </div>
                 <div>
@@ -266,7 +273,8 @@ function OutsourcingPage() {
           <div className="grid gap-16 lg:grid-cols-2 items-center">
             <Reveal variant="right">
               <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl mb-8">
-                What Our Clients <span className="text-primary italic">Experience</span>
+                What Our Clients{" "}
+                <span className="text-primary italic">Experience</span>
               </h2>
               <div className="grid gap-4">
                 {[
@@ -275,30 +283,49 @@ function OutsourcingPage() {
                   "Lower cost compared to hiring full-time specialists",
                   "More leadership time for strategic decisions",
                 ].map((item) => (
-                  <div key={item} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+                  <div
+                    key={item}
+                    className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+                  >
                     <CheckCircle2 className="text-primary" size={24} />
                     <span className="text-lg font-medium">{item}</span>
                   </div>
                 ))}
               </div>
             </Reveal>
-            <Reveal variant="left" className="bg-primary/10 rounded-3xl p-12 border border-primary/20">
-              <h3 className="font-serif text-3xl mb-6">Ready to Offload with Confidence?</h3>
+            <Reveal
+              variant="left"
+              className="bg-primary/10 rounded-3xl p-12 border border-primary/20"
+            >
+              <h3 className="font-serif text-3xl mb-6">
+                Ready to Offload with Confidence?
+              </h3>
               <p className="text-slate-400 text-lg mb-10">
-                Let’s discuss which processes you can hand over starting next month.
+                Let’s discuss which processes you can hand over starting next
+                month.
               </p>
               <div className="space-y-6">
-                <a href="mailto:info@jpcannassociates.com" className="flex items-center gap-4 group">
+                <a
+                  href="mailto:info@jpcannassociates.com"
+                  className="flex items-center gap-4 group"
+                >
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-primary border border-white/10 group-hover:border-primary/50 transition-colors">
                     <Mail size={20} />
                   </div>
-                  <span className="text-lg font-medium group-hover:text-primary transition-colors">info@jpcannassociates.com</span>
+                  <span className="text-lg font-medium group-hover:text-primary transition-colors">
+                    info@jpcannassociates.com
+                  </span>
                 </a>
-                <a href="tel:+233302242573" className="flex items-center gap-4 group">
+                <a
+                  href="tel:+233302242573"
+                  className="flex items-center gap-4 group"
+                >
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-primary border border-white/10 group-hover:border-primary/50 transition-colors">
                     <Phone size={20} />
                   </div>
-                  <span className="text-lg font-medium group-hover:text-primary transition-colors">+233 302 242 573</span>
+                  <span className="text-lg font-medium group-hover:text-primary transition-colors">
+                    +233 302 242 573
+                  </span>
                 </a>
               </div>
             </Reveal>
@@ -320,8 +347,9 @@ function OutsourcingPage() {
               Free BPO Assessment
             </h2>
             <p className="text-xl text-blue-100 mb-10 relative">
-              We will review one process (e.g., payroll, data entry, or tax filing)
-              and show you potential time and cost savings. No obligation.
+              We will review one process (e.g., payroll, data entry, or tax
+              filing) and show you potential time and cost savings. No
+              obligation.
             </p>
             <Link
               to="/contact"

@@ -323,18 +323,12 @@ function ContactPage() {
                     className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none ring-primary/20 focus:ring-4 transition-all focus:border-primary appearance-none cursor-pointer"
                   >
                     <option value="">Select a subject…</option>
-                    <option value="Advisory Services">
-                      Advisory Services
-                    </option>
+                    <option value="Advisory Services">Advisory Services</option>
                     <option value="Business Outsourcing">
                       Business Outsourcing
                     </option>
-                    <option value="Capacity Building">
-                      Capacity Building
-                    </option>
-                    <option value="ISO Certification">
-                      ISO Certification
-                    </option>
+                    <option value="Capacity Building">Capacity Building</option>
+                    <option value="ISO Certification">ISO Certification</option>
                     <option value="Other">Other Enquiry</option>
                   </select>
                 </div>

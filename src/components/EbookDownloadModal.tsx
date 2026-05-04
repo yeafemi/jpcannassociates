@@ -32,7 +32,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface EbookDownloadModalProps {
-  ebook: any | null;
+  ebook: Record<string, unknown> | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -58,14 +58,17 @@ export function EbookDownloadModal({
     setSubmitting(true);
     try {
       // Record the lead in contact_submissions (non-blocking)
-      supabase.from("contact_submissions").insert({
-        full_name: values.fullName,
-        email: values.email,
-        subject: `E-book Download: ${ebook?.title}`,
-        message: `User requested download for e-book: ${ebook?.title} (ID: ${ebook?.id}). Phone: ${values.phone}`,
-      }).then(({ error }) => {
-        if (error) console.warn("Lead capture failed (non-blocking):", error);
-      });
+      supabase
+        .from("contact_submissions")
+        .insert({
+          full_name: values.fullName,
+          email: values.email,
+          subject: `E-book Download: ${ebook?.title}`,
+          message: `User requested download for e-book: ${ebook?.title} (ID: ${ebook?.id}). Phone: ${values.phone}`,
+        })
+        .then(({ error }) => {
+          if (error) console.warn("Lead capture failed (non-blocking):", error);
+        });
 
       toast.success("Details received! Your download is starting.");
       setDownloadReady(true);

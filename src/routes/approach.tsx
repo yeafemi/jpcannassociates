@@ -24,7 +24,8 @@ export const Route = createFileRoute("/approach")({
       { title: "Our Approach — JPCann Associates Limited" },
       {
         name: "description",
-        content: "Our structured 5-phase methodology ensures transparency, accountability, and measurable results through collaborative transformation.",
+        content:
+          "Our structured 5-phase methodology ensures transparency, accountability, and measurable results through collaborative transformation.",
       },
     ],
   }),
@@ -97,7 +98,10 @@ function ApproachPage() {
       <PageHero
         eyebrow={pageData?.hero_eyebrow || "Methodology"}
         title={pageData?.hero_title || "Collaborative Transformation"}
-        description={pageData?.hero_description || "We don't deliver generic advice. We partner with you to co-create solutions that stick through a structured, results-driven process."}
+        description={
+          pageData?.hero_description ||
+          "We don't deliver generic advice. We partner with you to co-create solutions that stick through a structured, results-driven process."
+        }
       />
 
       {/* Intro Section */}
@@ -106,7 +110,7 @@ function ApproachPage() {
           <div className="absolute top-0 left-0 h-96 w-96 rounded-full bg-primary blur-3xl" />
           <div className="absolute bottom-0 right-0 h-96 w-96 rounded-full bg-accent blur-3xl" />
         </div>
-        
+
         <div className="mx-auto max-w-4xl px-4 text-center md:px-6">
           <Reveal variant="up">
             <h2 className="font-serif text-3xl md:text-5xl text-foreground mb-8">
@@ -114,9 +118,10 @@ function ApproachPage() {
               <span className="text-primary italic">where you need to be.</span>
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              Our structured 5-phase methodology ensures transparency, accountability, 
-              and measurable results from start to finish. We bridge the gap between 
-              strategy and execution by being deeply involved in the implementation journey.
+              Our structured 5-phase methodology ensures transparency,
+              accountability, and measurable results from start to finish. We
+              bridge the gap between strategy and execution by being deeply
+              involved in the implementation journey.
             </p>
           </Reveal>
         </div>
@@ -126,7 +131,9 @@ function ApproachPage() {
       <section className="py-16 bg-slate-50/50">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
           <Reveal className="mb-12 text-center" variant="up">
-            <h2 className="font-serif text-3xl md:text-5xl mb-6">The 5-Phase Methodology</h2>
+            <h2 className="font-serif text-3xl md:text-5xl mb-6">
+              The 5-Phase Methodology
+            </h2>
             <div className="mx-auto h-1.5 w-24 rounded-full bg-primary/20">
               <div className="h-full w-12 rounded-full bg-primary" />
             </div>
@@ -145,12 +152,14 @@ function ApproachPage() {
               >
                 <div className="grid lg:grid-cols-[auto_1fr] gap-8 items-start">
                   {/* Phase Marker */}
-                  <div className={cn(
-                    "relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl border-2 shadow-sm transition-transform hover:scale-110",
-                    m.bg,
-                    m.color,
-                    m.border
-                  )}>
+                  <div
+                    className={cn(
+                      "relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl border-2 shadow-sm transition-transform hover:scale-110",
+                      m.bg,
+                      m.color,
+                      m.border,
+                    )}
+                  >
                     <m.icon size={32} />
                     <div className="absolute -right-3 -top-3 rounded-full bg-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-tight border border-border shadow-xs">
                       {m.phase}
@@ -197,15 +206,19 @@ function ApproachPage() {
                     title: "Designed for sustainability",
                     desc: "We build your capability, not your dependency. Our goal is to leave your team stronger and more capable than when we arrived.",
                     icon: ShieldCheck,
-                  }
+                  },
                 ].map((item, i) => (
                   <div key={item.title} className="flex gap-6">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
                       <item.icon size={24} />
                     </div>
                     <div>
-                      <h4 className="text-xl font-bold mb-2 text-foreground">{item.title}</h4>
-                      <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+                      <h4 className="text-xl font-bold mb-2 text-foreground">
+                        {item.title}
+                      </h4>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {item.desc}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -217,24 +230,29 @@ function ApproachPage() {
                 <div className="absolute top-0 right-0 h-full w-full opacity-20">
                   <div className="absolute top-10 right-10 h-32 w-32 rounded-full border-4 border-dashed border-white/20 animate-spin-slow" />
                 </div>
-                
+
                 <h3 className="font-serif text-3xl md:text-4xl mb-8 relative">
-                  Real results start with a <br /> 
+                  Real results start with a <br />
                   <span className="text-primary italic">conversation.</span>
                 </h3>
-                
+
                 <p className="text-lg text-slate-400 mb-10 relative">
-                  Ready to transform complexity into results? Let's discuss how our 5-phase approach can work for your organisation.
+                  Ready to transform complexity into results? Let's discuss how
+                  our 5-phase approach can work for your organisation.
                 </p>
 
                 <Link
                   to="/contact"
                   className="inline-flex items-center gap-3 rounded-full bg-primary px-8 py-4 text-lg font-bold text-white shadow-lg transition-all hover:bg-primary/90 hover:translate-x-2 relative group w-fit"
                 >
-                  Get Started <ArrowRight size={20} className="transition-transform group-hover:translate-x-1" />
+                  Get Started{" "}
+                  <ArrowRight
+                    size={20}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
                 </Link>
               </div>
-              
+
               {/* Decorative Floating Element */}
               <div className="absolute -bottom-6 -right-6 h-32 w-32 rounded-3xl bg-accent/20 backdrop-blur-xl -z-10 animate-bounce-slow" />
             </Reveal>
@@ -245,12 +263,18 @@ function ApproachPage() {
       {/* Final Achievement Banner */}
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <Reveal variant="scale" className="rounded-3xl bg-linear-to-r from-blue-600 to-indigo-700 p-12 text-center text-white shadow-2xl shadow-blue-500/20">
+          <Reveal
+            variant="scale"
+            className="rounded-3xl bg-linear-to-r from-blue-600 to-indigo-700 p-12 text-center text-white shadow-2xl shadow-blue-500/20"
+          >
             <CheckCircle2 size={48} className="mx-auto mb-6 text-accent" />
-            <h2 className="font-serif text-3xl md:text-4xl mb-6">Built for Excellence</h2>
+            <h2 className="font-serif text-3xl md:text-4xl mb-6">
+              Built for Excellence
+            </h2>
             <p className="mx-auto max-w-2xl text-blue-100 text-lg">
-              ISO-accredited methodology and teams that understand regulated, high-stakes environments. 
-              Partner with JPCann to build lasting organisational capability.
+              ISO-accredited methodology and teams that understand regulated,
+              high-stakes environments. Partner with JPCann to build lasting
+              organisational capability.
             </p>
           </Reveal>
         </div>

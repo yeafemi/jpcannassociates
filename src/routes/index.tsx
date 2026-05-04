@@ -266,7 +266,8 @@ function Index() {
                   Our Services – At a Glance
                 </h2>
                 <p className="mx-auto mt-6 max-w-2xl text-muted-foreground">
-                  Tailored consulting, outsourcing, and training solutions designed to solve real problems and build lasting capability.
+                  Tailored consulting, outsourcing, and training solutions
+                  designed to solve real problems and build lasting capability.
                 </p>
               </div>
               <div className="mt-10 grid gap-6 md:grid-cols-3">
@@ -310,21 +311,28 @@ function Index() {
                 </div>
                 <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-foreground mb-6">
                   Our Approach: <br />
-                  <span className="text-primary italic">Collaborative Transformation</span>
+                  <span className="text-primary italic">
+                    Collaborative Transformation
+                  </span>
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                  We don't deliver generic advice. We partner with you to co-create solutions that stick. 
-                  Our structured 5-phase methodology ensures transparency, accountability, and 
+                  We don't deliver generic advice. We partner with you to
+                  co-create solutions that stick. Our structured 5-phase
+                  methodology ensures transparency, accountability, and
                   measurable results from start to finish.
                 </p>
                 <Link
                   to="/approach"
                   className="group inline-flex items-center gap-2 text-sm font-bold text-primary transition-all hover:translate-x-1"
                 >
-                  Learn more about our methodology <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                  Learn more about our methodology{" "}
+                  <ArrowRight
+                    size={16}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
                 </Link>
               </Reveal>
-              
+
               <Reveal variant="left" className="relative">
                 <div className="grid grid-cols-2 gap-4">
                   {[
@@ -333,15 +341,26 @@ function Index() {
                     { label: "Phase 3", title: "Strategy" },
                     { label: "Phase 4", title: "Implementation" },
                   ].map((p, i) => (
-                    <div key={p.title} className="rounded-2xl border border-border bg-white p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-2">{p.label}</p>
-                      <h4 className="font-serif text-lg font-medium">{p.title}</h4>
+                    <div
+                      key={p.title}
+                      className="rounded-2xl border border-border bg-white p-6 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+                    >
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-accent mb-2">
+                        {p.label}
+                      </p>
+                      <h4 className="font-serif text-lg font-medium">
+                        {p.title}
+                      </h4>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-6 text-center">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Phase 5</p>
-                  <h4 className="font-serif text-xl font-bold text-primary">Closure & Evaluation</h4>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">
+                    Phase 5
+                  </p>
+                  <h4 className="font-serif text-xl font-bold text-primary">
+                    Closure & Evaluation
+                  </h4>
                 </div>
               </Reveal>
             </div>

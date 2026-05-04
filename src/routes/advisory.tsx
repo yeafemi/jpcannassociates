@@ -305,7 +305,9 @@ function AdvisoryPage() {
       <section className="bg-primary py-20 text-white overflow-hidden relative">
         <div className="mx-auto max-w-4xl px-4 text-center md:px-6 relative z-10">
           <Reveal variant="scale">
-            <h2 className="font-serif text-3xl md:text-4xl mb-6">Our Portfolio</h2>
+            <h2 className="font-serif text-3xl md:text-4xl mb-6">
+              Our Portfolio
+            </h2>
             <p className="text-xl text-primary-foreground/90 mb-10">
               The testament to what we have done in the past is curated in our
               Project Portfolio.
@@ -329,7 +331,8 @@ function AdvisoryPage() {
           <div className="grid gap-16 lg:grid-cols-2">
             <Reveal variant="right">
               <h2 className="font-serif text-3xl md:text-5xl mb-8">
-                Ready to Move <span className="text-primary italic">Forward?</span>
+                Ready to Move{" "}
+                <span className="text-primary italic">Forward?</span>
               </h2>
               <p className="text-lg text-slate-400 mb-10 leading-relaxed">
                 Let’s talk about your next strategic move. Whether you need a
@@ -343,8 +346,15 @@ function AdvisoryPage() {
                     <Mail size={20} />
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">Email us</p>
-                    <a href="mailto:info@jpcannassociates.com" className="text-lg font-medium hover:text-primary transition-colors">info@jpcannassociates.com</a>
+                    <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
+                      Email us
+                    </p>
+                    <a
+                      href="mailto:info@jpcannassociates.com"
+                      className="text-lg font-medium hover:text-primary transition-colors"
+                    >
+                      info@jpcannassociates.com
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -352,8 +362,15 @@ function AdvisoryPage() {
                     <Phone size={20} />
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">Call us</p>
-                    <a href="tel:+233302242573" className="text-lg font-medium hover:text-primary transition-colors">+233 302 242 573</a>
+                    <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
+                      Call us
+                    </p>
+                    <a
+                      href="tel:+233302242573"
+                      className="text-lg font-medium hover:text-primary transition-colors"
+                    >
+                      +233 302 242 573
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -361,18 +378,31 @@ function AdvisoryPage() {
                     <Globe2 size={20} />
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">Visit our website</p>
-                    <a href="https://www.jpcannassociates.com" target="_blank" className="text-lg font-medium hover:text-primary transition-colors">www.jpcannassociates.com</a>
+                    <p className="text-xs uppercase tracking-widest text-slate-500 font-bold">
+                      Visit our website
+                    </p>
+                    <a
+                      href="https://www.jpcannassociates.com"
+                      target="_blank"
+                      className="text-lg font-medium hover:text-primary transition-colors"
+                    >
+                      www.jpcannassociates.com
+                    </a>
                   </div>
                 </div>
               </div>
             </Reveal>
 
-            <Reveal variant="scale" className="flex flex-col items-center justify-center rounded-3xl bg-white/5 border border-white/10 p-10 backdrop-blur-sm text-center">
+            <Reveal
+              variant="scale"
+              className="flex flex-col items-center justify-center rounded-3xl bg-white/5 border border-white/10 p-10 backdrop-blur-sm text-center"
+            >
               <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-primary/20 text-primary border-4 border-primary/20">
                 <Zap size={32} />
               </div>
-              <h3 className="font-serif text-2xl mb-6">Book a Free Discovery Call</h3>
+              <h3 className="font-serif text-2xl mb-6">
+                Book a Free Discovery Call
+              </h3>
               <p className="text-slate-400 mb-10">
                 Book a free 30-minute discovery call to discuss your challenge
                 and explore how we can help.
