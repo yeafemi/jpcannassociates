@@ -28,10 +28,23 @@ jobs:
       - name: Build
         run: |
           npm run build
-          cp dist/index.html dist/404.html
+          if [ -f "dist/index.html" ]; then
+            cp dist/index.html dist/404.html
+            echo "DEPLOY_FOLDER=dist" >> $GITHUB_ENV
+          elif [ -f "dist/client/index.html" ]; then
+            cp dist/client/index.html dist/client/404.html
+            echo "DEPLOY_FOLDER=dist/client" >> $GITHUB_ENV
+          elif [ -f ".output/public/index.html" ]; then
+            cp .output/public/index.html .output/public/404.html
+            echo "DEPLOY_FOLDER=.output/public" >> $GITHUB_ENV
+          else
+            echo "Error: index.html not found in any expected location."
+            ls -R
+            exit 1
+          fi
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist
+          folder: ${{ env.DEPLOY_FOLDER }}
           branch: gh-pages
