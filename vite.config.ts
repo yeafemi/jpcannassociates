@@ -15,6 +15,11 @@ export default defineConfig({
     plugins: [tailwindcss()],
     build: {
       ssr: false,
+      rollupOptions: {
+        input: {
+          main: "index.html",
+        },
+      },
     },
   },
 });
