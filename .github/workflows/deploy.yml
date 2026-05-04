@@ -34,18 +34,19 @@ jobs:
         run: |
           npm run build
           
-          # Smart Search for index.html ONLY in build output folders
-          echo "Searching for built index.html..."
-          INDEX_PATH=$(find dist .output -name "index.html" 2>/dev/null | head -n 1)
+          # Find the built index.html by looking in dist or .output folders
+          echo "Locating built index.html..."
+          INDEX_PATH=$(find . \( -path "*/dist/*" -o -path "*/.output/*" \) -name "index.html" | head -n 1)
           
           if [ -z "$INDEX_PATH" ]; then
-            echo "Error: index.html not found in build output!"
-            ls -R dist .output 2>/dev/null
+            echo "Error: Could not find index.html in build output (dist or .output)."
+            echo "Listing all files for debugging:"
+            find . -maxdepth 3 -not -path "*/node_modules/*"
             exit 1
           fi
           
           OUT_DIR=$(dirname "$INDEX_PATH")
-          echo "Detected output directory: $OUT_DIR"
+          echo "Final deployment directory: $OUT_DIR"
           
           # Copy index to 404 for SPA routing
           cp "$INDEX_PATH" "$OUT_DIR/404.html"
