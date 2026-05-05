@@ -1895,7 +1895,7 @@ function PortfolioEditor({
       location: location || undefined,
     };
 
-    const payload = {
+    const insertPayload = {
       collection_key: "portfolio",
       item_key: itemKey,
       title,
@@ -1906,11 +1906,22 @@ function PortfolioEditor({
       is_published: published,
     };
 
+    // When updating, never send collection_key / item_key — they are identity
+    // fields protected by the unique constraint and must not be overwritten.
+    const updatePayload = {
+      title,
+      subtitle: subtitle || null,
+      description: description || null,
+      image_url: imageUrl || null,
+      metadata: metadata as unknown as never,
+      is_published: published,
+    };
+
     const res = isNew
-      ? await supabase.from("site_collections").insert([payload])
+      ? await supabase.from("site_collections").insert([insertPayload])
       : await supabase
           .from("site_collections")
-          .update(payload)
+          .update(updatePayload)
           .eq("id", portfolio!.id);
     setSaving(false);
     if (res.error) {
@@ -1938,10 +1949,12 @@ function PortfolioEditor({
             <Input value={title} onChange={(e) => setTitle(e.target.value)} />
           </Field>
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="Slug (URL)">
+            <Field label={isNew ? "Slug (URL)" : "Slug (URL) — fixed after creation"}>
               <Input
                 value={itemKey}
-                onChange={(e) => setItemKey(slugify(e.target.value))}
+                readOnly={!isNew}
+                onChange={(e) => isNew && setItemKey(slugify(e.target.value))}
+                className={!isNew ? "opacity-60 cursor-not-allowed bg-muted" : ""}
               />
             </Field>
             <Field label="Category">
