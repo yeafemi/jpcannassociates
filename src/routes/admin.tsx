@@ -256,7 +256,13 @@ function AdminPage() {
       icon: UserRound,
       color: "text-teal-500",
     },
-    { id: "leads", label: "Leads", icon: Users2, color: "text-orange-500" },
+    {
+      id: "testimonials",
+      label: "Testimonials",
+      icon: MessageSquare,
+      color: "text-pink-500",
+    },
+    { id: "leads", label: "Leads", icon: UserPlus, color: "text-blue-500" },
     {
       id: "enquiries",
       label: "Enquiries",
@@ -457,6 +463,21 @@ function AdminPage() {
                 />
               </Reveal>
             )}
+            {activeTab === "testimonials" && (
+              <Reveal variant="up">
+                <CollectionEditor
+                  collectionKey="testimonials"
+                  labelSingular="Testimonial"
+                  labelPlural="Testimonials"
+                  showImage={false}
+                  showSubtitle={true}
+                  showDescription={true}
+                  subtitleLabel="Client Name"
+                  titleLabel="Feedback"
+                />
+              </Reveal>
+            )}
+
             {activeTab === "leads" && (
               <Reveal variant="up">
                 <LeadsAdmin />

@@ -6,6 +6,7 @@ import {
   Users,
   CheckCircle2,
   Layers,
+  Quote,
 } from "lucide-react";
 import { SiteLayout } from "@/components/SiteLayout";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
@@ -131,6 +132,7 @@ const stats = [
 function Index() {
   const [api, setApi] = React.useState<any>();
   const [clientApi, setClientApi] = React.useState<any>();
+  const [testimonialApi, setTestimonialApi] = React.useState<any>();
 
   const { data: pageData } = useQuery({
     queryKey: ["site_page", "index"],
@@ -187,6 +189,20 @@ function Index() {
     },
   });
 
+  const { data: dbTestimonials } = useQuery({
+    queryKey: ["site_collections", "testimonials"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_collections")
+        .select("title, subtitle, description")
+        .eq("collection_key", "testimonials")
+        .eq("is_published", true)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const displayStats = dbStats?.length
     ? dbStats.map((s) => ({ value: s.title, label: s.subtitle }))
     : stats;
@@ -218,6 +234,16 @@ function Index() {
 
     return () => clearInterval(intervalId);
   }, [clientApi]);
+
+  React.useEffect(() => {
+    if (!testimonialApi) return;
+
+    const intervalId = setInterval(() => {
+      testimonialApi.scrollNext();
+    }, 6000);
+
+    return () => clearInterval(intervalId);
+  }, [testimonialApi]);
 
   return (
     <SiteLayout>
@@ -365,6 +391,62 @@ function Index() {
               </Reveal>
             </div>
           </section>
+
+          {/* Testimonials */}
+          {dbTestimonials && dbTestimonials.length > 0 && (
+            <section className="relative overflow-hidden py-24 bg-white/60 backdrop-blur-sm">
+              <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none">
+                <Quote size={400} />
+              </div>
+              <div className="relative mx-auto max-w-7xl px-4 md:px-6">
+                <div className="mx-auto max-w-2xl text-center mb-16">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+                    Testimonials
+                  </p>
+                  <h2 className="mt-4 font-serif text-4xl font-bold text-foreground md:text-5xl">
+                    What Our Clients Say
+                  </h2>
+                </div>
+
+                <Carousel
+                  setApi={setTestimonialApi}
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full"
+                >
+                  <CarouselContent className="-ml-4">
+                    {dbTestimonials.map((t, i) => (
+                      <CarouselItem
+                        key={i}
+                        className="pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                      >
+                        <Reveal
+                          variant="up"
+                          delay={i * 0.1}
+                          className="flex h-full flex-col rounded-2xl border border-border bg-white p-8 shadow-sm transition-all hover:shadow-md"
+                        >
+                          <Quote className="text-primary/20 mb-6" size={32} />
+                          <p className="flex-1 font-serif text-lg italic leading-relaxed text-foreground/90">
+                            "{t.title}"
+                          </p>
+                          <div className="mt-8 pt-6 border-t border-border">
+                            <p className="font-bold text-foreground">
+                              {t.subtitle}
+                            </p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+                              {t.description}
+                            </p>
+                          </div>
+                        </Reveal>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
+              </div>
+            </section>
+          )}
 
           {/* Why us */}
           <section className="py-20 md:py-24">
