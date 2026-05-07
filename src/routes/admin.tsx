@@ -41,6 +41,7 @@ import {
   Globe,
   History,
   RefreshCcw,
+  UserPlus,
 } from "lucide-react";
 import { SitePageEditor } from "@/components/admin/SitePageEditor";
 import { CollectionEditor } from "@/components/admin/CollectionEditor";
