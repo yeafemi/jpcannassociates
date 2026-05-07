@@ -158,7 +158,7 @@ export function CollectionEditor({
         </Button>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 text-sm text-muted-foreground">
             <Loader2 className="mb-4 animate-spin text-primary" size={32} />
@@ -182,7 +182,7 @@ export function CollectionEditor({
           </div>
         ) : (
           <Table>
-            <TableHeader className="bg-slate-50/50">
+            <TableHeader className="bg-muted/50">
               <TableRow>
                 <TableHead className="w-12"></TableHead>
                 {showImage && <TableHead>Image</TableHead>}
@@ -196,7 +196,7 @@ export function CollectionEditor({
               {filtered.map((item) => (
                 <TableRow
                   key={item.id}
-                  className="hover:bg-slate-50/30 transition-colors"
+                  className="hover:bg-muted/30 transition-colors"
                 >
                   <TableCell>
                     <GripVertical
@@ -207,7 +207,7 @@ export function CollectionEditor({
                   {showImage && (
                     <TableCell>
                       {item.image_url ? (
-                        <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-slate-50">
+                        <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-muted">
                           <img
                             src={item.image_url}
                             alt={item.title}
@@ -302,7 +302,7 @@ export function CollectionEditor({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-4 gap-2">
-            <AlertDialogCancel className="rounded-xl border-slate-200">
+            <AlertDialogCancel className="rounded-xl border-border">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -420,8 +420,8 @@ function ItemEditor({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-none shadow-2xl p-0">
-        <div className="bg-slate-50 px-8 py-6 border-b border-border rounded-t-2xl">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-none shadow-2xl p-0 bg-card">
+        <div className="bg-muted px-8 py-6 border-b border-border rounded-t-2xl">
           <DialogHeader>
             <DialogTitle className="font-serif text-3xl font-bold tracking-tight text-foreground">
               {isNew ? `Add New ${labelSingular}` : `Edit ${labelSingular}`}
@@ -509,9 +509,9 @@ function ItemEditor({
               <Label className="text-sm font-bold text-foreground">
                 Image / Media
               </Label>
-              <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-border p-6 bg-slate-50/30">
+              <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-border p-6 bg-muted/30">
                 {imageUrl ? (
-                  <div className="relative group mx-auto h-40 w-full max-w-sm overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+                  <div className="relative group mx-auto h-40 w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card shadow-sm">
                     <img
                       src={imageUrl}
                       alt="Preview"
@@ -531,7 +531,7 @@ function ItemEditor({
                 ) : (
                   <button
                     onClick={() => fileRef.current?.click()}
-                    className="flex flex-col items-center justify-center h-40 rounded-xl bg-white border border-border shadow-sm hover:border-primary/50 transition-all group"
+                    className="flex flex-col items-center justify-center h-40 rounded-xl bg-card border border-border shadow-sm hover:border-primary/50 transition-all group"
                   >
                     <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:scale-110 transition-transform">
                       <Upload size={20} />
@@ -547,7 +547,7 @@ function ItemEditor({
                     value={imageUrl}
                     onChange={(e) => setImageUrl(e.target.value)}
                     placeholder="…or paste image URL"
-                    className="h-10 rounded-xl bg-white"
+                    className="h-10 rounded-xl bg-card"
                   />
                 </div>
 
@@ -566,7 +566,7 @@ function ItemEditor({
             </div>
           )}
 
-          <div className="flex items-center gap-3 p-4 rounded-xl bg-slate-50 border border-border">
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-muted border border-border">
             <input
               id="pub-item"
               type="checkbox"
@@ -586,12 +586,12 @@ function ItemEditor({
           </div>
         </div>
 
-        <div className="px-8 py-6 bg-slate-50 border-t border-border flex justify-end gap-3 rounded-b-2xl">
+        <div className="px-8 py-6 bg-muted border-t border-border flex justify-end gap-3 rounded-b-2xl">
           <Button
             variant="outline"
             onClick={onClose}
             disabled={saving}
-            className="rounded-xl px-6 h-11 border-slate-200"
+            className="rounded-xl px-6 h-11 border-border"
           >
             Cancel
           </Button>

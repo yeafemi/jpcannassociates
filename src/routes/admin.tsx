@@ -283,9 +283,9 @@ function AdminPage() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen bg-background text-foreground transition-colors duration-500">
       {/* Modern Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-white shadow-sm transition-all md:relative">
+      <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r border-border bg-card shadow-sm transition-all md:relative">
         <div className="flex h-full flex-col">
           <div className="flex h-20 items-center border-b border-border px-6">
             <Link to="/admin" className="flex items-center gap-2">
@@ -536,7 +536,7 @@ function PageContentEditor() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap gap-2 rounded-2xl bg-white p-2 shadow-sm border border-border">
+      <div className="flex flex-wrap gap-2 rounded-2xl bg-card p-2 shadow-sm border border-border">
         {pages.map((p) => (
           <button
             key={p.id}
@@ -4087,7 +4087,7 @@ function SettingsAdmin() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Appearance Section */}
-        <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
           <div className="flex items-center gap-3 mb-8">
             <div className="p-2.5 rounded-xl bg-primary/5 text-primary">
               <SwatchBook size={20} />
@@ -4111,7 +4111,7 @@ function SettingsAdmin() {
                   "flex flex-col items-center gap-3 rounded-2xl border-2 p-4 transition-all duration-300",
                   theme === t.id
                     ? "border-primary bg-primary/5 text-primary shadow-lg shadow-primary/5"
-                    : "border-transparent bg-slate-50 hover:bg-slate-100 text-muted-foreground"
+                    : "border-transparent bg-muted hover:bg-muted/80 text-muted-foreground"
                 )}
               >
                 <t.icon size={24} />
@@ -4122,7 +4122,7 @@ function SettingsAdmin() {
         </div>
 
         {/* Accessibility & Interface */}
-        <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
+        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
           <div className="flex items-center gap-3 mb-8">
             <div className="p-2.5 rounded-xl bg-accent/10 text-accent">
               <Settings size={20} />
@@ -4148,7 +4148,7 @@ function SettingsAdmin() {
               />
             </div>
 
-            <div className="flex items-center justify-between border-t border-slate-100 pt-6">
+            <div className="flex items-center justify-between border-t border-border pt-6">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <Activity size={14} className="text-muted-foreground" />
@@ -4165,8 +4165,8 @@ function SettingsAdmin() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-dashed border-slate-200 p-12 text-center bg-slate-50/50">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">
+      <div className="rounded-3xl border border-dashed border-border p-12 text-center bg-muted/30">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
           All settings are saved automatically to this device.
         </p>
       </div>

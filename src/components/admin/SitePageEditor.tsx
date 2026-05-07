@@ -249,7 +249,7 @@ export function SitePageEditor({ pageKey }: { pageKey: string }) {
                 </Button>
               </div>
               {page.hero_image_url && (
-                <div className="group relative mt-2 aspect-video overflow-hidden rounded-xl border border-border bg-slate-50">
+                <div className="group relative mt-2 aspect-video overflow-hidden rounded-xl border border-border bg-muted">
                   <img
                     src={page.hero_image_url}
                     alt="Hero preview"
