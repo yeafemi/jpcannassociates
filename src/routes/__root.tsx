@@ -60,6 +60,9 @@ function RootComponent() {
 function AppFrame() {
   const { isLoading } = useAuth();
   const [pageReady, setPageReady] = useState(false);
+  const location = useLocation();
+
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -92,9 +95,9 @@ function AppFrame() {
 
   return (
     <>
-      <MotionEffects />
+      {!isAdminPage && <MotionEffects />}
       <BrandLoader active={showLoader} />
-      <FloatingSocials />
+      {!isAdminPage && <FloatingSocials />}
       <Outlet />
       <Toaster richColors position="top-right" />
     </>
