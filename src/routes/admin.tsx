@@ -64,9 +64,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useTheme } from "@/components/ThemeProvider";
+import { Moon, Sun, Monitor, SwatchBook, Minimize2, Activity } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -4060,13 +4063,109 @@ function AuditLogAdmin() {
 }
 
 function SettingsAdmin() {
+  const { 
+    theme, 
+    setTheme, 
+    reducedMotion, 
+    setReducedMotion, 
+    compactMode, 
+    setCompactMode 
+  } = useTheme();
+
   return (
-    <div className="py-12 text-center text-muted-foreground">
-      <Settings size={48} className="mx-auto mb-4 opacity-20" />
-      <h3 className="text-lg font-serif mb-2">Dashboard Settings</h3>
-      <p className="text-sm">
-        Configuration options for the admin portal will appear here.
-      </p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-serif text-3xl font-bold text-foreground">Preferences</h2>
+          <p className="text-muted-foreground mt-1 text-sm">Personalize your dashboard experience.</p>
+        </div>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Appearance Section */}
+        <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2.5 rounded-xl bg-primary/5 text-primary">
+              <SwatchBook size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-foreground">Appearance</h3>
+              <p className="text-xs text-muted-foreground">Select your preferred visual style.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { id: "light", label: "Light", icon: Sun },
+              { id: "dark", label: "Dark", icon: Moon },
+              { id: "gray", label: "Grey", icon: Monitor },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTheme(t.id as any)}
+                className={cn(
+                  "flex flex-col items-center gap-3 rounded-2xl border-2 p-4 transition-all duration-300",
+                  theme === t.id
+                    ? "border-primary bg-primary/5 text-primary shadow-lg shadow-primary/5"
+                    : "border-transparent bg-slate-50 hover:bg-slate-100 text-muted-foreground"
+                )}
+              >
+                <t.icon size={24} />
+                <span className="text-xs font-bold">{t.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Accessibility & Interface */}
+        <div className="rounded-3xl border border-border bg-white p-8 shadow-sm">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2.5 rounded-xl bg-accent/10 text-accent">
+              <Settings size={20} />
+            </div>
+            <div>
+              <h3 className="font-bold text-foreground">Interface</h3>
+              <p className="text-xs text-muted-foreground">Configure accessibility and layout.</p>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Minimize2 size={14} className="text-muted-foreground" />
+                  <Label className="text-sm font-bold">Compact Mode</Label>
+                </div>
+                <p className="text-xs text-muted-foreground">Reduce padding and spacing.</p>
+              </div>
+              <Switch 
+                checked={compactMode} 
+                onCheckedChange={setCompactMode} 
+              />
+            </div>
+
+            <div className="flex items-center justify-between border-t border-slate-100 pt-6">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <Activity size={14} className="text-muted-foreground" />
+                  <Label className="text-sm font-bold">Reduced Motion</Label>
+                </div>
+                <p className="text-xs text-muted-foreground">Minimize animations and transitions.</p>
+              </div>
+              <Switch 
+                checked={reducedMotion} 
+                onCheckedChange={setReducedMotion} 
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-dashed border-slate-200 p-12 text-center bg-slate-50/50">
+        <p className="text-xs font-medium text-slate-400 uppercase tracking-widest">
+          All settings are saved automatically to this device.
+        </p>
+      </div>
     </div>
   );
 }

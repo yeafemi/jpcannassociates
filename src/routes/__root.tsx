@@ -16,6 +16,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { FloatingSocials } from "@/components/FloatingSocials";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const queryClient = new QueryClient();
 
@@ -51,9 +52,11 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppFrame />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppFrame />
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
