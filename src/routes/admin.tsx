@@ -322,7 +322,7 @@ function AdminPage() {
           </nav>
 
           <div className="border-t border-border p-4">
-            <div className="mb-4 rounded-xl bg-slate-50 p-3">
+            <div className="mb-4 rounded-xl bg-muted p-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <UserRound size={14} />
@@ -339,7 +339,7 @@ function AdminPage() {
             </div>
             <Button
               variant="outline"
-              className="w-full justify-start gap-2 border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-destructive"
+              className="w-full justify-start gap-2 border-border text-muted-foreground hover:bg-muted hover:text-destructive"
               onClick={async () => {
                 await signOut();
                 toast.success("Signed out.");
@@ -355,7 +355,7 @@ function AdminPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto">
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border bg-white/80 px-8 backdrop-blur-md">
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border bg-card/80 px-8 backdrop-blur-md">
           <div>
             <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60">
               Dashboard / {menuItems.find((m) => m.id === activeTab)?.label}
@@ -364,7 +364,7 @@ function AdminPage() {
           <div className="flex items-center gap-4">
             <Link
               to="/"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-xs font-bold text-foreground transition-all hover:bg-muted hover:shadow-sm"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-bold text-foreground transition-all hover:bg-muted hover:shadow-sm"
             >
               <Globe size={14} className="text-primary" />
               Visit Website
