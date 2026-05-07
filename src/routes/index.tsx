@@ -494,8 +494,8 @@ function Index() {
             <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:grid-cols-2 md:px-6">
               <div className="relative overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-soft)]">
                 <img
-                  src="https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?auto=format&fit=crop&q=80&w=1887"
-                  alt="Modern architectural abstract representing engineered trust and precision standards"
+                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=2070"
+                  alt="Professional team leader standing in a modern boardroom with a diverse corporate team collaborating in the background"
                   loading="lazy"
                   width={1600}
                   height={1024}
