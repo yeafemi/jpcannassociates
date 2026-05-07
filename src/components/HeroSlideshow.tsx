@@ -14,8 +14,8 @@ const HERO_SLIDES = [
     alt: "Skyscrapers and a city expressway at sunrise",
   },
   {
-    image: "https://images.unsplash.com/photo-1570126127658-244977e3f1b0?auto=format&fit=crop&q=80&w=2070",
-    alt: "Modern glass office towers reaching into a clear sky",
+    image: "https://images.unsplash.com/photo-1518005020480-1cd343837947?auto=format&fit=crop&q=80&w=2070",
+    alt: "Modern bright skyscraper reflecting sunlight",
   },
   {
     image: heroSlide5,
@@ -66,7 +66,7 @@ export function HeroSlideshow({
 
           return (
             <div
-              key={slide.image}
+              key={`${slide.image}-${index}`}
               className="hero-slideshow__slide"
               data-active={isActive}
               aria-hidden={!isActive}
