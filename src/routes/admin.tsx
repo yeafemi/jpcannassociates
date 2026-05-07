@@ -1661,34 +1661,34 @@ function OverviewAdmin({
             <Button
               variant="outline"
               onClick={() => setActiveTab("trainings")}
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 group"
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 group transition-all"
             >
               <Plus className="text-emerald-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold">New Training</span>
+              <span className="text-xs font-semibold group-hover:text-emerald-900 transition-colors">New Training</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => setActiveTab("leads")}
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-orange-50 hover:border-orange-200 group"
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-orange-50 hover:border-orange-200 group transition-all"
             >
               <Download className="text-orange-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold">Export Leads</span>
+              <span className="text-xs font-semibold group-hover:text-orange-900 transition-colors">Export Leads</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => setActiveTab("management")}
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-purple-50 hover:border-purple-200 group"
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-purple-50 hover:border-purple-200 group transition-all"
             >
               <UserRound className="text-purple-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold">New Profile</span>
+              <span className="text-xs font-semibold group-hover:text-purple-900 transition-colors">New Profile</span>
             </Button>
             <Button
               variant="outline"
               onClick={() => setActiveTab("users")}
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-blue-50 hover:border-blue-200 group"
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-blue-50 hover:border-blue-200 group transition-all"
             >
               <Shield className="text-blue-600 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold">Site Logs</span>
+              <span className="text-xs font-semibold group-hover:text-blue-900 transition-colors">Site Logs</span>
             </Button>
           </div>
         </div>
