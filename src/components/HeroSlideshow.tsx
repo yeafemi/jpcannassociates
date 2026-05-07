@@ -14,7 +14,7 @@ const HERO_SLIDES = [
     alt: "Skyscrapers and a city expressway at sunrise",
   },
   {
-    image: "https://images.unsplash.com/photo-1449156001437-3a1661acda71?auto=format&fit=crop&q=80&w=2070",
+    image: "https://images.unsplash.com/photo-1570126127658-244977e3f1b0?auto=format&fit=crop&q=80&w=2070",
     alt: "Modern glass office towers reaching into a clear sky",
   },
   {
