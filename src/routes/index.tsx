@@ -79,26 +79,44 @@ const clientele = [
 
 export const Route = createFileRoute("/")({
   component: Index,
-  head: () => ({
+    links: [
+      {
+        rel: "canonical",
+        href: "https://yeafemi.github.io/jpcannassociates/",
+      },
+    ],
     meta: [
       {
-        title: "JPCann Associates Limited — Business Advisory, BPO & Training",
+        title:
+          "JPCann Associates Limited | Business Advisory, BPO & ISO Training Ghana",
       },
       {
         name: "description",
         content:
-          "ISO-accredited advisory, business process outsourcing and professional training in Ghana. Trusted expertise for organisations that demand excellence.",
+          "ISO 9001/27001 accredited business advisory, process outsourcing (BPO), and corporate training in Ghana. Experts in GRC, ESG, internal audit, and capacity building.",
       },
       { property: "og:title", content: "JPCann Associates Limited" },
       {
         property: "og:description",
-        content: "ISO-accredited business advisory, BPO and training.",
+        content:
+          "Accredited business advisory, BPO and professional training for organisations that demand excellence.",
       },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:url",
+        content: "https://yeafemi.github.io/jpcannassociates/",
+      },
+      { property: "og:site_name", content: "JPCann Associates Limited" },
       { property: "og:image", content: heroSlide1 },
       { name: "twitter:image", content: heroSlide1 },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@jpcannassociates" },
+      {
+        name: "keywords",
+        content:
+          "business advisory ghana, bpo ghana, iso training ghana, corporate training, internal audit outsourcing, esg consulting, grc services",
+      },
     ],
-  }),
 });
 
 const services = [
