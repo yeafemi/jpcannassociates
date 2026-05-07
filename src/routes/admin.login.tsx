@@ -162,8 +162,6 @@ function AdminLoginPage() {
               content, and professional services with a single, unified interface.
             </p>
           </div>
-
-          </div>
         </section>
 
         {/* Right Side: Login Form */}
