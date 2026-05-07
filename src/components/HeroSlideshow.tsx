@@ -14,20 +14,20 @@ const HERO_SLIDES = [
     alt: "Skyscrapers and a city expressway at sunrise",
   },
   {
-    image: heroSlide2,
-    alt: "Corporate training and leadership meeting in a modern boardroom",
+    image: "https://images.unsplash.com/photo-1449156001437-3a1661acda71?auto=format&fit=crop&q=80&w=2070",
+    alt: "Modern glass office towers reaching into a clear sky",
   },
   {
     image: heroSlide5,
     alt: "Modern business district skyline at dusk",
   },
   {
-    image: heroSlide4,
-    alt: "Executive training presentation with a corporate team",
+    image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=2044",
+    alt: "Majestic city skyline featuring iconic skyscrapers",
   },
   {
-    image: heroAdvisory,
-    alt: "JPCann advisory team collaborating in a modern boardroom",
+    image: "https://images.unsplash.com/photo-1542361345-89e58247f2d5?auto=format&fit=crop&q=80&w=2070",
+    alt: "Dramatic city skyscrapers bathed in golden sunset light",
   },
 ] as const;
 
