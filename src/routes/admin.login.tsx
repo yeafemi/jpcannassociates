@@ -128,64 +128,87 @@ function AdminLoginPage() {
   });
 
   return (
-    <div className="min-h-screen bg-secondary/40">
-      <div className="mx-auto grid min-h-screen max-w-6xl items-stretch px-4 py-8 md:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
-        <section
-          className="relative hidden overflow-hidden rounded-xl border border-border text-primary-foreground lg:block"
-          style={{ background: "var(--gradient-hero)" }}
-        >
-          <div className="absolute inset-0 opacity-20 [background:radial-gradient(circle_at_25%_20%,white,transparent_40%),radial-gradient(circle_at_80%_80%,var(--accent),transparent_50%)]" />
-          <div className="relative flex h-full flex-col justify-between p-10">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg border border-primary-foreground/20 bg-primary-foreground/10">
-              <ShieldCheck size={24} />
+    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-950 font-sans">
+      {/* Background Image with Overlay */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070" 
+          alt="Modern Architecture"
+          className="h-full w-full object-cover opacity-50 scale-105 animate-in fade-in zoom-in duration-1000"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/90 via-slate-950/70 to-primary/30" />
+      </div>
+
+      {/* Decorative Glows */}
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-primary/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-accent/20 rounded-full blur-[120px] animate-pulse" />
+
+      <div className="relative z-10 w-full max-w-5xl px-6 grid lg:grid-cols-2 gap-12 items-center">
+        {/* Left Side: Brand & Welcome */}
+        <section className="hidden lg:flex flex-col justify-center space-y-8 animate-in slide-in-from-left-12 duration-1000">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
+              <ShieldCheck size={32} className="text-accent" />
             </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                Admin workspace
-              </p>
-              <h1 className="mt-4 font-serif text-4xl">
-                Control the entire website without technical complexity.
-              </h1>
-              <p className="mt-5 max-w-md text-sm text-primary-foreground/80">
-                Update page copy, services, careers, events, contact details and
-                visuals from one guided dashboard.
-              </p>
+            <h2 className="text-3xl font-serif font-bold text-white tracking-tight">JPCann Admin</h2>
+          </div>
+
+          <div className="space-y-6">
+            <h1 className="text-6xl font-serif font-bold text-white leading-[1.1]">
+              Elevating <span className="text-accent">Excellence</span> through Digital Control.
+            </h1>
+            <p className="text-xl text-slate-300 max-w-lg leading-relaxed">
+              Welcome to the secure administrative portal. Manage your global presence, 
+              content, and professional services with a single, unified interface.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-6 pt-4">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-10 w-10 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center overflow-hidden">
+                  <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Admin" />
+                </div>
+              ))}
             </div>
+            <p className="text-sm font-medium text-slate-400">
+              Joined by <span className="text-white font-bold">12+</span> team members
+            </p>
           </div>
         </section>
 
-        <section className="flex items-center justify-center">
-          <div className="w-full max-w-md rounded-xl border border-border bg-card p-8 shadow-[var(--shadow-elegant)]">
-            <div className="mb-8">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-primary">
-                <LockKeyhole size={22} />
+        {/* Right Side: Login Form */}
+        <section className="flex items-center justify-center animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
+          <div className="w-full max-w-md backdrop-blur-2xl bg-white/5 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
+            {/* Form Glow */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[60px]" />
+            
+            <div className="relative mb-10">
+              <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-accent/20 text-accent mb-6">
+                <LockKeyhole size={24} />
               </div>
-              <h1 className="mt-5 font-serif text-3xl text-foreground">
-                Admin login
-              </h1>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Sign in with your approved admin username and password to access
-                the content editor.
-              </p>
+              <h3 className="text-3xl font-serif font-bold text-white">Secure Login</h3>
+              <p className="text-slate-400 mt-2">Enter your credentials to continue.</p>
             </div>
 
             <Form {...form}>
-              <form onSubmit={onSubmit} className="space-y-5">
+              <form onSubmit={onSubmit} className="space-y-6">
                 <FormField
                   control={form.control}
                   name="username"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Username</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-slate-300 font-medium">Username</FormLabel>
                       <FormControl>
                         <Input
                           type="text"
                           autoComplete="username"
                           placeholder={usernamePlaceholder}
+                          className="h-14 bg-white/5 border-white/10 rounded-2xl text-white placeholder:text-slate-600 focus:bg-white/10 focus:border-accent/50 transition-all px-5"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -194,26 +217,42 @@ function AdminLoginPage() {
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-slate-300 font-medium">Password</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           autoComplete="current-password"
-                          placeholder="Enter your password"
+                          placeholder="••••••••"
+                          className="h-14 bg-white/5 border-white/10 rounded-2xl text-white placeholder:text-slate-600 focus:bg-white/10 focus:border-accent/50 transition-all px-5"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
 
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? "Signing in..." : "Sign in to admin"}
+                <Button 
+                  type="submit" 
+                  className="w-full h-14 bg-accent hover:bg-accent/90 text-slate-950 font-bold rounded-2xl text-lg shadow-xl shadow-accent/20 transition-all active:scale-[0.98]" 
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <span className="flex items-center gap-2">
+                      <div className="h-4 w-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
+                      Signing in...
+                    </span>
+                  ) : "Access Dashboard"}
                 </Button>
               </form>
             </Form>
+
+            <div className="mt-10 pt-8 border-t border-white/5 text-center">
+              <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">
+                JPCann Associates Limited &copy; {new Date().getFullYear()}
+              </p>
+            </div>
           </div>
         </section>
       </div>
