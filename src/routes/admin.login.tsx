@@ -163,17 +163,6 @@ function AdminLoginPage() {
             </p>
           </div>
 
-          <div className="flex items-center gap-6 pt-4">
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-10 w-10 rounded-full border-2 border-slate-900 bg-slate-800 flex items-center justify-center overflow-hidden">
-                  <img src={`https://i.pravatar.cc/100?img=${i + 10}`} alt="Admin" />
-                </div>
-              ))}
-            </div>
-            <p className="text-sm font-medium text-slate-400">
-              Joined by <span className="text-white font-bold">12+</span> team members
-            </p>
           </div>
         </section>
 
