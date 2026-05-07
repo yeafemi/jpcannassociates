@@ -14,8 +14,8 @@ const HERO_SLIDES = [
     alt: "Skyscrapers and a city expressway at sunrise",
   },
   {
-    image: "https://images.unsplash.com/photo-1518005020480-1cd343837947?auto=format&fit=crop&q=80&w=2070",
-    alt: "Modern bright skyscraper reflecting sunlight",
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070",
+    alt: "Modern high-rise office building with glass facade",
   },
   {
     image: heroSlide5,
