@@ -179,7 +179,7 @@ function AdminLoginPage() {
 
         {/* Right Side: Login Form */}
         <section className="flex items-center justify-center animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300">
-          <div className="w-full max-w-md backdrop-blur-2xl bg-white/5 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden">
+          <div className="w-full max-w-md backdrop-blur-2xl bg-white/5 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden float-gentle">
             {/* Form Glow */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[60px]" />
             
@@ -235,12 +235,12 @@ function AdminLoginPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-14 bg-accent hover:bg-accent/90 text-slate-950 font-bold rounded-2xl text-lg shadow-xl shadow-accent/20 transition-all active:scale-[0.98]" 
+                  className="w-full h-14 bg-accent hover:bg-accent/90 text-white font-bold rounded-2xl text-lg shadow-xl shadow-accent/20 transition-all hover:shadow-accent/40 hover:-translate-y-1 active:scale-[0.98]" 
                   disabled={submitting}
                 >
                   {submitting ? (
                     <span className="flex items-center gap-2">
-                      <div className="h-4 w-4 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin" />
+                      <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Signing in...
                     </span>
                   ) : "Access Dashboard"}
