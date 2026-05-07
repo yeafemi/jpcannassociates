@@ -4,6 +4,7 @@ import {
   redirect,
   Outlet,
   useLocation,
+  useNavigate,
 } from "@tanstack/react-router";
 import {
   LogOut,
@@ -198,6 +199,7 @@ function slugify(s: string) {
 
 function AdminPage() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -343,7 +345,7 @@ function AdminPage() {
               onClick={async () => {
                 await signOut();
                 toast.success("Signed out.");
-                window.location.href = "/admin/login";
+                navigate({ to: "/admin/login" });
               }}
             >
               <LogOut size={16} />
