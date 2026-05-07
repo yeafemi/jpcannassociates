@@ -13,6 +13,8 @@ import {
   XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/AuthProvider";
+import { logAudit } from "@/utils/audit";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -76,6 +78,7 @@ export function CollectionEditor({
   subtitleLabel = "Subtitle",
   titleLabel = "Title",
 }: CollectionEditorProps) {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<CollectionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -122,6 +125,11 @@ export function CollectionEditor({
     if (error) toast.error(`Could not delete ${labelSingular}`);
     else {
       toast.success(`${labelSingular} deleted`);
+      logAudit({
+        action_type: "DELETE",
+        resource_type: collectionKey,
+        resource_name: confirmDelete.title,
+      });
       setConfirmDelete(null);
       load();
     }
@@ -242,14 +250,16 @@ export function CollectionEditor({
                       >
                         <Pencil size={14} />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
-                        onClick={() => setConfirmDelete(item)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => setConfirmDelete(item)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -400,6 +410,11 @@ function ItemEditor({
     }
 
     toast.success(`${labelSingular} saved`);
+    logAudit({
+      action_type: isNew ? "CREATE" : "UPDATE",
+      resource_type: collectionKey,
+      resource_name: title,
+    });
     onSaved();
   };
 

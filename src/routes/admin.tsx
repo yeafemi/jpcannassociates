@@ -39,6 +39,8 @@ import {
   Monitor,
   Smartphone,
   Globe,
+  History,
+  RefreshCcw,
 } from "lucide-react";
 import { SitePageEditor } from "@/components/admin/SitePageEditor";
 import { CollectionEditor } from "@/components/admin/CollectionEditor";
@@ -48,6 +50,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { logAudit } from "@/utils/audit";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -83,6 +86,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+
+
 export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
     // Skip guard for the login child route to avoid redirect loops
@@ -98,13 +103,14 @@ export const Route = createFileRoute("/admin")({
         search: { redirect: location.href },
       });
     }
-    const { data: role } = await supabase
+    const { data: userRole } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", session.user.id)
-      .eq("role", "admin")
+      .in("role", ["admin", "editor"])
       .maybeSingle();
-    if (!role) {
+
+    if (!userRole) {
       throw redirect({
         to: "/admin/login",
         search: { redirect: location.href },
@@ -258,6 +264,8 @@ function AdminPage() {
       color: "text-cyan-500",
     },
     { id: "users", label: "Users", icon: Shield, color: "text-slate-500" },
+    { id: "audit", label: "Audit Log", icon: History, color: "text-gray-500" },
+    { id: "settings", label: "Settings", icon: Settings, color: "text-gray-600" },
   ];
 
   return (
@@ -354,7 +362,7 @@ function AdminPage() {
           <div className="mx-auto max-w-6xl">
             {activeTab === "overview" && (
               <Reveal variant="up">
-                <OverviewAdmin />
+                <OverviewAdmin setActiveTab={setActiveTab} />
               </Reveal>
             )}
             {activeTab === "trainings" && (
@@ -469,6 +477,16 @@ function AdminPage() {
                 <ContactEnquiriesAdmin />
               </Reveal>
             )}
+            {activeTab === "audit" && (
+              <Reveal variant="up">
+                <AuditLogAdmin />
+              </Reveal>
+            )}
+            {activeTab === "settings" && (
+              <Reveal variant="up">
+                <SettingsAdmin />
+              </Reveal>
+            )}
           </div>
         </div>
       </main>
@@ -515,6 +533,7 @@ function PageContentEditor() {
 /* ────────────────────────────  TRAININGS ADMIN  ──────────────────────────── */
 
 function TrainingsAdmin() {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<Training[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -566,6 +585,11 @@ function TrainingsAdmin() {
     if (error) toast.error("Could not delete training");
     else {
       toast.success("Training deleted");
+      logAudit({
+        action_type: "DELETE",
+        resource_type: "training",
+        resource_name: confirmDelete.title,
+      });
       setConfirmDelete(null);
       load();
     }
@@ -765,14 +789,16 @@ function TrainingsAdmin() {
                       >
                         <Pencil size={14} /> Edit
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setConfirmDelete(t)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(t)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -1214,6 +1240,7 @@ function Field({
 /* ────────────────────────────  LEADS ADMIN  ──────────────────────────── */
 
 function LeadsAdmin() {
+  const { isAdmin } = useAuth();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -1394,19 +1421,35 @@ function StatCard({
   label,
   value,
   icon: Icon,
+  onClick,
+  color = "text-primary",
 }: {
   label: string;
   value: string | number;
   icon?: any;
+  onClick?: () => void;
+  color?: string;
 }) {
   return (
-    <div className="group interactive-lift rounded-xl border border-border bg-card p-6 shadow-sm transition-all hover:border-primary/20">
+    <div
+      onClick={onClick}
+      className={cn(
+        "group interactive-lift rounded-xl border border-border bg-card p-6 shadow-sm transition-all",
+        onClick && "cursor-pointer hover:border-primary/20 hover:shadow-md",
+      )}
+    >
       <div className="flex items-center justify-between">
         <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80">
           {label}
         </p>
         {Icon && (
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/5 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+          <div
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-lg bg-primary/5 transition-all duration-300",
+              color,
+              onClick && "group-hover:bg-primary group-hover:text-primary-foreground",
+            )}
+          >
             <Icon size={16} />
           </div>
         )}
@@ -1420,7 +1463,11 @@ function StatCard({
 
 /* ────────────────────────────  OVERVIEW  ──────────────────────────── */
 
-function OverviewAdmin() {
+function OverviewAdmin({
+  setActiveTab,
+}: {
+  setActiveTab: (tab: string) => void;
+}) {
   const [stats, setStats] = useState({
     trainings: 0,
     trainingsPublished: 0,
@@ -1494,17 +1541,29 @@ function OverviewAdmin() {
           label="Total Trainings"
           value={stats.trainings}
           icon={GraduationCap}
+          onClick={() => setActiveTab("trainings")}
+          color="text-emerald-500"
         />
         <StatCard
           label="Portfolio Items"
           value={stats.portfolios}
           icon={Briefcase}
+          onClick={() => setActiveTab("portfolios")}
+          color="text-amber-500"
         />
-        <StatCard label="Total Leads" value={stats.leads} icon={Users2} />
+        <StatCard
+          label="Total Leads"
+          value={stats.leads}
+          icon={Users2}
+          onClick={() => setActiveTab("leads")}
+          color="text-orange-500"
+        />
         <StatCard
           label="Leads This Week"
           value={stats.leadsThisWeek}
           icon={Calendar}
+          onClick={() => setActiveTab("leads")}
+          color="text-blue-500"
         />
       </div>
 
@@ -1572,30 +1631,34 @@ function OverviewAdmin() {
           <div className="p-6 grid grid-cols-2 gap-4">
             <Button
               variant="outline"
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/30 group"
+              onClick={() => setActiveTab("trainings")}
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 group"
             >
-              <Plus className="text-primary group-hover:scale-110 transition-transform" />
+              <Plus className="text-emerald-500 group-hover:scale-110 transition-transform" />
               <span className="text-xs font-semibold">New Training</span>
             </Button>
             <Button
               variant="outline"
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/30 group"
+              onClick={() => setActiveTab("leads")}
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-orange-50 hover:border-orange-200 group"
             >
-              <Download className="text-primary group-hover:scale-110 transition-transform" />
+              <Download className="text-orange-500 group-hover:scale-110 transition-transform" />
               <span className="text-xs font-semibold">Export Leads</span>
             </Button>
             <Button
               variant="outline"
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/30 group"
+              onClick={() => setActiveTab("management")}
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-purple-50 hover:border-purple-200 group"
             >
-              <UserRound className="text-primary group-hover:scale-110 transition-transform" />
+              <UserRound className="text-purple-500 group-hover:scale-110 transition-transform" />
               <span className="text-xs font-semibold">New Profile</span>
             </Button>
             <Button
               variant="outline"
-              className="h-24 flex-col gap-2 rounded-xl hover:bg-primary/5 hover:border-primary/30 group"
+              onClick={() => setActiveTab("users")}
+              className="h-24 flex-col gap-2 rounded-xl hover:bg-blue-50 hover:border-blue-200 group"
             >
-              <Shield className="text-primary group-hover:scale-110 transition-transform" />
+              <Shield className="text-blue-600 group-hover:scale-110 transition-transform" />
               <span className="text-xs font-semibold">Site Logs</span>
             </Button>
           </div>
@@ -1608,6 +1671,10 @@ function OverviewAdmin() {
           <Link
             to="/admin"
             className="text-xs font-semibold text-primary hover:underline"
+            onClick={(e) => {
+              e.preventDefault();
+              setActiveTab("leads");
+            }}
           >
             View all
           </Link>
@@ -1645,6 +1712,7 @@ type Portfolio = {
 };
 
 function PortfoliosAdmin() {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<Portfolio[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -1765,14 +1833,16 @@ function PortfoliosAdmin() {
                       >
                         <Pencil size={14} /> Edit
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setConfirmDelete(p)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(p)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -1929,6 +1999,11 @@ function PortfolioEditor({
       return;
     }
     toast.success("Portfolio saved");
+    logAudit({
+      action_type: isNew ? "CREATE" : "UPDATE",
+      resource_type: "portfolio",
+      resource_name: title,
+    });
     onSaved();
   };
 
@@ -2102,14 +2177,15 @@ type ProfileRow = {
   user_id: string;
   display_name: string | null;
   created_at: string;
-  is_admin: boolean;
+  role: UserRole | null;
 };
 
 function UsersAdmin() {
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isAdmin } = useAuth();
   const [rows, setRows] = useState<ProfileRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
+  const [isAddingUser, setIsAddingUser] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -2119,18 +2195,19 @@ function UsersAdmin() {
           .from("profiles")
           .select("user_id, display_name, created_at")
           .order("created_at", { ascending: false }),
-        supabase.from("user_roles").select("user_id, role").eq("role", "admin"),
+        supabase.from("user_roles").select("user_id, role"),
       ]);
     if (pErr || rErr) {
       toast.error("Could not load users");
       setLoading(false);
       return;
     }
-    const adminSet = new Set((roles ?? []).map((r) => r.user_id));
+
+    const roleMap = new Map((roles ?? []).map((r) => [r.user_id, r.role]));
     setRows(
       (profiles ?? []).map((p) => ({
         ...p,
-        is_admin: adminSet.has(p.user_id),
+        role: (roleMap.get(p.user_id) as UserRole) || null,
       })),
     );
     setLoading(false);
@@ -2150,42 +2227,59 @@ function UsersAdmin() {
     );
   }, [rows, query]);
 
-  const grantAdmin = async (userId: string) => {
-    const { error } = await supabase
-      .from("user_roles")
-      .insert([{ user_id: userId, role: "admin" }]);
-    if (error) toast.error("Could not grant admin: " + error.message);
-    else {
-      toast.success("Admin role granted");
-      load();
-    }
-  };
-
-  const revokeAdmin = async (userId: string) => {
-    if (userId === currentUser?.id) {
-      toast.error("You cannot revoke your own admin role.");
+  const updateRole = async (userId: string, newRole: UserRole | "member") => {
+    if (userId === currentUser?.id && newRole !== "admin") {
+      toast.error("You cannot change your own role.");
       return;
     }
-    const { error } = await supabase
+
+    // Remove existing roles first
+    const { error: delError } = await supabase
       .from("user_roles")
       .delete()
-      .eq("user_id", userId)
-      .eq("role", "admin");
-    if (error) toast.error("Could not revoke admin: " + error.message);
-    else {
-      toast.success("Admin role revoked");
-      load();
+      .eq("user_id", userId);
+
+    if (delError) {
+      toast.error("Could not update role: " + delError.message);
+      return;
     }
+
+    if (newRole !== "member") {
+      const { error: insError } = await supabase
+        .from("user_roles")
+        .insert([{ user_id: userId, role: newRole }]);
+
+      if (insError) {
+        toast.error("Could not set role: " + insError.message);
+        return;
+      }
+    }
+
+    toast.success(`Role updated to ${newRole}`);
+    logAudit({
+      action_type: "ROLE_CHANGE",
+      resource_type: "user",
+      resource_name: userId,
+      details: { new_role: newRole },
+    });
+    load();
   };
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-xs text-amber-900">
-        New admin accounts are created from the database (the auth login uses
-        <code className="mx-1 rounded bg-amber-100 px-1">
-          username@jpcann-admin.local
-        </code>
-        emails). Once an account exists, grant it the admin role here.
+      <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs text-blue-900 flex justify-between items-center">
+        <div>
+          <p className="font-bold mb-1">User Management</p>
+          <p className="opacity-80">
+            Admins can create users and assign roles. Editors can view users but
+            cannot change roles.
+          </p>
+        </div>
+        {isAdmin && (
+          <Button onClick={() => setIsAddingUser(true)} size="sm" className="gap-2">
+            <Plus size={14} /> Add User
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -2220,7 +2314,7 @@ function UsersAdmin() {
                 <TableHead className="hidden md:table-cell py-4">
                   Joined
                 </TableHead>
-                <TableHead className="py-4">Role</TableHead>
+                <TableHead className="py-4">Current Role</TableHead>
                 <TableHead className="text-right py-4">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -2245,9 +2339,13 @@ function UsersAdmin() {
                     </div>
                   </TableCell>
                   <TableCell className="py-4">
-                    {r.is_admin ? (
+                    {r.role === "admin" ? (
                       <Badge className="gap-1.5 bg-emerald-100/80 text-emerald-800 hover:bg-emerald-100 border-emerald-200">
                         <ShieldCheck size={12} /> Admin
+                      </Badge>
+                    ) : r.role === "editor" ? (
+                      <Badge className="gap-1.5 bg-blue-100/80 text-blue-800 hover:bg-blue-100 border-blue-200">
+                        <Pencil size={12} /> Editor
                       </Badge>
                     ) : (
                       <Badge
@@ -2259,25 +2357,42 @@ function UsersAdmin() {
                     )}
                   </TableCell>
                   <TableCell className="text-right py-4">
-                    {r.is_admin ? (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-[11px] font-bold text-destructive hover:text-destructive hover:bg-destructive/5 border-destructive/20"
-                        onClick={() => revokeAdmin(r.user_id)}
-                        disabled={r.user_id === currentUser?.id}
-                      >
-                        <ShieldOff size={13} className="mr-1.5" /> Revoke
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-[11px] font-bold hover:bg-primary/5 hover:border-primary/30"
-                        onClick={() => grantAdmin(r.user_id)}
-                      >
-                        <ShieldCheck size={13} className="mr-1.5" /> Make admin
-                      </Button>
+                    {isAdmin && r.user_id !== currentUser?.id && (
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className={cn(
+                            "h-8 text-[10px] font-bold",
+                            r.role === "admin" && "bg-emerald-50 border-emerald-200 text-emerald-700"
+                          )}
+                          onClick={() => updateRole(r.user_id, "admin")}
+                        >
+                          Make Admin
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className={cn(
+                            "h-8 text-[10px] font-bold",
+                            r.role === "editor" && "bg-blue-50 border-blue-200 text-blue-700"
+                          )}
+                          onClick={() => updateRole(r.user_id, "editor")}
+                        >
+                          Make Editor
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className={cn(
+                            "h-8 text-[10px] font-bold",
+                            !r.role && "bg-slate-100 border-slate-200"
+                          )}
+                          onClick={() => updateRole(r.user_id, "member")}
+                        >
+                          Revoke
+                        </Button>
+                      </div>
                     )}
                   </TableCell>
                 </TableRow>
@@ -2286,7 +2401,156 @@ function UsersAdmin() {
           </Table>
         )}
       </div>
+
+      {isAddingUser && (
+        <CreateUserDialog
+          onClose={() => setIsAddingUser(false)}
+          onCreated={() => {
+            setIsAddingUser(false);
+            load();
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+function CreateUserDialog({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: () => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState<UserRole>("editor");
+  const [loading, setLoading] = useState(false);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // 1. Create the user
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName,
+        },
+      },
+    });
+
+    if (signUpError) {
+      toast.error("Could not create user: " + signUpError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data.user) {
+      // 2. Grant the role
+      const { error: roleError } = await supabase
+        .from("user_roles")
+        .insert([{ user_id: data.user.id, role }]);
+
+      if (roleError) {
+        toast.error(
+          "User created but role assignment failed: " + roleError.message,
+        );
+      } else {
+        toast.success(`User ${email} created as ${role}`);
+        logAudit({
+          action_type: "CREATE",
+          resource_type: "user",
+          resource_name: email,
+          details: { role },
+        });
+        onCreated();
+      }
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add New Dashboard User</DialogTitle>
+          <DialogDescription>
+            Create an account and assign a role. The user will need to confirm
+            their email before logging in.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleCreate} className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label>Display Name</Label>
+            <Input
+              required
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="e.g. John Doe"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Email Address</Label>
+            <Input
+              required
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="user@example.com"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Initial Password</Label>
+            <Input
+              required
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Dashboard Role</Label>
+            <div className="flex gap-4 pt-1">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  checked={role === "admin"}
+                  onChange={() => setRole("admin")}
+                  className="text-primary"
+                />
+                <span className="text-sm font-medium">Admin</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="role"
+                  checked={role === "editor"}
+                  onChange={() => setRole("editor")}
+                  className="text-primary"
+                />
+                <span className="text-sm font-medium">Editor</span>
+              </label>
+            </div>
+          </div>
+          <DialogFooter className="pt-4">
+            <Button type="button" variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={loading}>
+              {loading && <Loader2 className="animate-spin mr-2" size={14} />}
+              Create User
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -2315,6 +2579,7 @@ function PeopleAdmin({
   labelSingular: string;
   labelPlural: string;
 }) {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<Person[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -2362,6 +2627,11 @@ function PeopleAdmin({
       toast.success(
         `${labelSingular[0].toUpperCase() + labelSingular.slice(1)} deleted`,
       );
+      logAudit({
+        action_type: "DELETE",
+        resource_type: collectionKey,
+        resource_name: confirmDelete.title,
+      });
       setConfirmDelete(null);
       load();
     }
@@ -2446,14 +2716,16 @@ function PeopleAdmin({
                       >
                         <Pencil size={14} /> Edit
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setConfirmDelete(p)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(p)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -2583,6 +2855,11 @@ function PersonEditor({
     toast.success(
       `${labelSingular[0].toUpperCase() + labelSingular.slice(1)} saved`,
     );
+    logAudit({
+      action_type: isNew ? "CREATE" : "UPDATE",
+      resource_type: collectionKey,
+      resource_name: title,
+    });
     onSaved();
   };
 
@@ -2714,6 +2991,7 @@ type Submission = {
 };
 
 function ContactEnquiriesAdmin() {
+  const { isAdmin } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -2866,6 +3144,7 @@ function ContactEnquiriesAdmin() {
 /* ────────────────────────────  E-BOOKS ADMIN  ──────────────────────────── */
 
 function EbooksAdmin() {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -2906,6 +3185,11 @@ function EbooksAdmin() {
     if (error) toast.error("Could not delete e-book");
     else {
       toast.success("E-book deleted");
+      logAudit({
+        action_type: "DELETE",
+        resource_type: "ebook",
+        resource_name: confirmDelete.title,
+      });
       setConfirmDelete(null);
       load();
     }
@@ -2974,14 +3258,16 @@ function EbooksAdmin() {
                       >
                         <Pencil size={14} />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setConfirmDelete(t)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(t)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -3116,6 +3402,11 @@ function EbookEditor({
     if (error) toast.error("Save failed: " + error.message);
     else {
       toast.success("E-book saved");
+      logAudit({
+        action_type: isNew ? "CREATE" : "UPDATE",
+        resource_type: "ebook",
+        resource_name: title,
+      });
       onSaved();
     }
     setSaving(false);
@@ -3246,6 +3537,7 @@ function EbookEditor({
 /* ────────────────────────────  BLOG ADMIN  ──────────────────────────── */
 
 function BlogAdmin() {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -3282,6 +3574,11 @@ function BlogAdmin() {
     if (error) toast.error("Delete failed");
     else {
       toast.success("Post deleted");
+      logAudit({
+        action_type: "DELETE",
+        resource_type: "blog",
+        resource_name: confirmDelete.title,
+      });
       setConfirmDelete(null);
       load();
     }
@@ -3350,14 +3647,16 @@ function BlogAdmin() {
                       >
                         <Pencil size={14} />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => setConfirmDelete(t)}
-                      >
-                        <Trash2 size={14} />
-                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(t)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -3470,6 +3769,11 @@ function BlogEditor({
     if (error) toast.error("Save failed: " + error.message);
     else {
       toast.success("Article saved");
+      logAudit({
+        action_type: isNew ? "CREATE" : "UPDATE",
+        resource_type: "blog",
+        resource_name: title,
+      });
       onSaved();
     }
     setSaving(false);
@@ -3583,5 +3887,164 @@ function BlogEditor({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* ────────────────────────────  AUDIT LOG ADMIN  ──────────────────────────── */
+
+type AuditLog = {
+  id: string;
+  user_id: string;
+  user_name?: string;
+  action_type: string;
+  resource_type: string;
+  resource_name: string | null;
+  details: any;
+  created_at: string;
+};
+
+function AuditLogAdmin() {
+  const [logs, setLogs] = useState<AuditLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("audit_logs_with_users")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    if (error) toast.error("Could not load audit logs");
+    else setLogs((data ?? []) as AuditLog[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return logs;
+    return logs.filter(
+      (l) =>
+        (l.user_name ?? "").toLowerCase().includes(q) ||
+        (l.resource_name ?? "").toLowerCase().includes(q) ||
+        l.resource_type.toLowerCase().includes(q) ||
+        l.action_type.toLowerCase().includes(q),
+    );
+  }, [logs, query]);
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="relative md:max-w-sm md:flex-1">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search logs…"
+            className="pl-9"
+          />
+        </div>
+        <Button variant="outline" onClick={load} disabled={loading}>
+          <RefreshCcw
+            size={14}
+            className={cn("mr-2", loading && "animate-spin")}
+          />
+          Refresh
+        </Button>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 animate-spin" size={16} /> Loading logs…
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            No audit logs found.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader className="bg-muted/30">
+              <TableRow>
+                <TableHead className="py-4">Time</TableHead>
+                <TableHead className="py-4">User</TableHead>
+                <TableHead className="py-4">Action</TableHead>
+                <TableHead className="py-4">Resource</TableHead>
+                <TableHead className="py-4">Details</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((l) => (
+                <TableRow
+                  key={l.id}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <TableCell className="text-xs text-muted-foreground py-4">
+                    {format(new Date(l.created_at), "MMM d, HH:mm:ss")}
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div className="font-medium text-sm">
+                      {l.user_name ?? "System"}
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <Badge
+                      className={cn(
+                        "text-[10px] uppercase font-bold",
+                        l.action_type === "CREATE" &&
+                          "bg-emerald-100 text-emerald-700",
+                        l.action_type === "UPDATE" &&
+                          "bg-amber-100 text-amber-700",
+                        l.action_type === "DELETE" &&
+                          "bg-rose-100 text-rose-700",
+                        l.action_type === "ROLE_CHANGE" &&
+                          "bg-purple-100 text-purple-700",
+                        l.action_type === "LOGIN" &&
+                          "bg-blue-100 text-blue-700",
+                      )}
+                    >
+                      {l.action_type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-4">
+                    <div className="text-xs font-semibold text-foreground uppercase tracking-wider opacity-60">
+                      {l.resource_type}
+                    </div>
+                    <div className="text-sm font-medium mt-0.5">
+                      {l.resource_name ?? "—"}
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-4 max-w-xs overflow-hidden text-ellipsis whitespace-nowrap text-xs text-muted-foreground">
+                    {JSON.stringify(l.details) !== "{}"
+                      ? JSON.stringify(l.details)
+                      : "No extra info"}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SettingsAdmin() {
+  return (
+    <div className="py-12 text-center text-muted-foreground">
+      <Settings size={48} className="mx-auto mb-4 opacity-20" />
+      <h3 className="text-lg font-serif mb-2">Dashboard Settings</h3>
+      <p className="text-sm">
+        Configuration options for the admin portal will appear here.
+      </p>
+    </div>
   );
 }

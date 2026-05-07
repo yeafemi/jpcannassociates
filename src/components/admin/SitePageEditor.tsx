@@ -14,6 +14,7 @@ import {
   FileText,
   Upload,
 } from "lucide-react";
+import { logAudit } from "@/utils/audit";
 
 interface SitePage {
   id: string;
@@ -97,6 +98,11 @@ export function SitePageEditor({ pageKey }: { pageKey: string }) {
       toast.error("Failed to save changes: " + error.message);
     } else {
       toast.success("Page content updated successfully");
+      logAudit({
+        action_type: "UPDATE",
+        resource_type: "page",
+        resource_name: page.page_name,
+      });
     }
     setSaving(false);
   }
