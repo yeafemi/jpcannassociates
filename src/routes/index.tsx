@@ -394,18 +394,25 @@ function Index() {
 
           {/* Testimonials */}
           {dbTestimonials && dbTestimonials.length > 0 && (
-            <section className="relative overflow-hidden py-24 bg-white/60 backdrop-blur-sm">
-              <div className="absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2 opacity-[0.03] pointer-events-none">
-                <Quote size={400} />
+            <section className="relative overflow-hidden py-28 md:py-32">
+              {/* Vibrant Background Elements */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/4 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-blue-400/20 blur-[120px]" />
+                <div className="absolute top-1/3 right-1/4 h-[400px] w-[400px] rounded-full bg-pink-400/15 blur-[100px]" />
+                <div className="absolute bottom-1/4 left-1/3 h-[300px] w-[300px] rounded-full bg-indigo-400/20 blur-[80px]" />
               </div>
+
               <div className="relative mx-auto max-w-7xl px-4 md:px-6">
-                <div className="mx-auto max-w-2xl text-center mb-16">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                    Testimonials
-                  </p>
-                  <h2 className="mt-4 font-serif text-4xl font-bold text-foreground md:text-5xl">
-                    What Our Clients Say
-                  </h2>
+                <div className="mx-auto max-w-3xl text-center mb-20">
+                  <Reveal variant="up">
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-4 border border-primary/20 backdrop-blur-sm">
+                      Trusted by Leaders
+                    </span>
+                    <h2 className="font-serif text-4xl font-bold text-foreground md:text-6xl tracking-tight leading-tight">
+                      What Our <span className="text-primary italic">Clients</span> Say
+                    </h2>
+                    <div className="mt-6 mx-auto h-1 w-20 bg-linear-to-r from-primary to-accent rounded-full" />
+                  </Reveal>
                 </div>
 
                 <Carousel
@@ -416,28 +423,44 @@ function Index() {
                   }}
                   className="w-full"
                 >
-                  <CarouselContent className="-ml-4">
+                  <CarouselContent className="-ml-6">
                     {dbTestimonials.map((t, i) => (
                       <CarouselItem
                         key={i}
-                        className="pl-4 basis-full md:basis-1/2 lg:basis-1/3"
+                        className="pl-6 basis-full md:basis-1/2 lg:basis-1/3"
                       >
                         <Reveal
                           variant="up"
                           delay={i * 0.1}
-                          className="flex h-full flex-col rounded-2xl border border-border bg-white p-8 shadow-sm transition-all hover:shadow-md"
+                          className="group h-full"
                         >
-                          <Quote className="text-primary/20 mb-6" size={32} />
-                          <p className="flex-1 font-serif text-lg italic leading-relaxed text-foreground/90">
-                            "{t.title}"
-                          </p>
-                          <div className="mt-8 pt-6 border-t border-border">
-                            <p className="font-bold text-foreground">
-                              {t.subtitle}
-                            </p>
-                            <p className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                              {t.description}
-                            </p>
+                          <div className="relative h-full flex flex-col rounded-3xl border border-white/40 bg-white/40 backdrop-blur-md p-10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-500 hover:bg-white/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden">
+                            {/* Decorative Quote Icon Background */}
+                            <Quote 
+                              className="absolute -top-4 -right-4 text-primary/5 transition-transform duration-700 group-hover:scale-150 group-hover:rotate-12" 
+                              size={120} 
+                            />
+                            
+                            <div className="relative z-10 flex-1">
+                              <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-linear-to-br from-primary/10 to-accent/10 border border-primary/20 mb-8">
+                                <Quote className="text-primary" size={24} />
+                              </div>
+                              
+                              <p className="font-serif text-xl italic leading-relaxed text-foreground/90 font-medium">
+                                "{t.title}"
+                              </p>
+                            </div>
+                            
+                            <div className="relative z-10 mt-10 pt-8 border-t border-slate-200/60 flex items-center gap-4">
+                              <div>
+                                <p className="font-bold text-foreground text-lg tracking-tight">
+                                  {t.subtitle}
+                                </p>
+                                <p className="text-xs font-semibold text-primary/70 uppercase tracking-widest mt-0.5">
+                                  {t.description}
+                                </p>
+                              </div>
+                            </div>
                           </div>
                         </Reveal>
                       </CarouselItem>
