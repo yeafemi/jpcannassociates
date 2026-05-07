@@ -494,8 +494,8 @@ function Index() {
             <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:grid-cols-2 md:px-6">
               <div className="relative overflow-hidden rounded-2xl border border-border shadow-[var(--shadow-soft)]">
                 <img
-                  src={aboutLeadership}
-                  alt="JPCann senior partners reviewing a client strategy document"
+                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=2070"
+                  alt="Elegant abstract fluid motion graphic in deep blue and teal"
                   loading="lazy"
                   width={1600}
                   height={1024}
