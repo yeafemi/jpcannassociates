@@ -42,6 +42,12 @@ import {
   History,
   RefreshCcw,
   UserPlus,
+  Moon,
+  Sun,
+  SwatchBook,
+  Minimize2,
+  Activity,
+  BookOpen,
 } from "lucide-react";
 import { SitePageEditor } from "@/components/admin/SitePageEditor";
 import { CollectionEditor } from "@/components/admin/CollectionEditor";
@@ -55,7 +61,6 @@ import { logAudit } from "@/utils/audit";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -65,7 +70,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTheme } from "@/components/ThemeProvider";
-import { Moon, Sun, Monitor, SwatchBook, Minimize2, Activity } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
