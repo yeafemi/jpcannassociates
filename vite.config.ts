@@ -5,7 +5,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
 export default defineConfig({
-  base: process.env.NODE_ENV === "production" ? "/jpcannassociates/" : "/",
+  base: process.env.GITHUB_ACTIONS === "true" ? "/jpcannassociates/" : "/",
   plugins: [react(), tailwindcss(), tsconfigPaths(), TanStackRouterVite()],
   build: {
     ssr: false,
