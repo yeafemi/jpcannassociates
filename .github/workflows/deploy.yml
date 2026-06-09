@@ -39,7 +39,7 @@ jobs:
 
           # Vite builds to ./dist by default
           OUT_DIR="./dist"
-          
+
           if [ ! -f "$OUT_DIR/index.html" ]; then
             echo "Error: Could not find index.html in $OUT_DIR."
             ls -la

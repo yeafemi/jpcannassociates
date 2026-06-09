@@ -85,7 +85,7 @@ function BlogPage() {
               <Reveal
                 key={post.id}
                 variant="up"
-                delay={(idx % 2) as any}
+                delay={String(idx % 2) as any}
                 className="group relative flex flex-col gap-6"
               >
                 <Link

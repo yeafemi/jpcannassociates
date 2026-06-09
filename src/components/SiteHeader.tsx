@@ -80,7 +80,7 @@ export function SiteHeader() {
               )}
               {"submenu" in n && hoveredMenu === n.label && (
                 <div className="absolute left-0 top-full min-w-[200px] animate-fade-up-soft rounded-lg border border-border bg-background/95 p-2 shadow-xl backdrop-blur-md">
-                  {n.submenu.map((s) => (
+                  {n.submenu?.map((s) => (
                     <Link
                       key={s.to}
                       to={s.to}
@@ -137,7 +137,7 @@ export function SiteHeader() {
                 )}
                 {"submenu" in n && (
                   <div className="ml-4 flex flex-col border-l border-border pl-4">
-                    {n.submenu.map((s) => (
+                    {n.submenu?.map((s) => (
                       <Link
                         key={s.to}
                         to={s.to}

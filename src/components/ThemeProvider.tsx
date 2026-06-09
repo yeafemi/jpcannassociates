@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     return (localStorage.getItem("ui-theme") as Theme) || "light";
   });
-  
+
   const [reducedMotion, setReducedMotion] = useState<boolean>(() => {
     return localStorage.getItem("ui-reduced-motion") === "true";
   });
@@ -28,7 +28,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const root = window.document.documentElement;
-    
+
     // Remove old themes
     root.classList.remove("light", "dark", "gray");
     root.classList.add(theme);
@@ -56,14 +56,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [compactMode]);
 
   return (
-    <ThemeContext.Provider value={{ 
-      theme, 
-      setTheme, 
-      reducedMotion, 
-      setReducedMotion,
-      compactMode,
-      setCompactMode
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        setTheme,
+        reducedMotion,
+        setReducedMotion,
+        compactMode,
+        setCompactMode,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

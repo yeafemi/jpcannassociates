@@ -236,7 +236,7 @@ function CorporateTrainingPage() {
               <Reveal
                 key={area.category}
                 variant="up"
-                delay={String(i * 0.05) as any}
+                delay={String(Math.min(i, 4)) as any}
                 className="group rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-xl"
               >
                 <div
@@ -371,7 +371,7 @@ function CorporateTrainingPage() {
               <Reveal
                 key={item.title}
                 variant="up"
-                delay={String(i * 0.1) as any}
+                delay={String(Math.min(i, 4)) as any}
                 className="flex flex-col items-center text-center group"
               >
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-primary shadow-sm transition-all group-hover:bg-primary group-hover:text-white group-hover:-translate-y-2">

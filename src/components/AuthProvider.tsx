@@ -55,7 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const currentSession =
         nextSession ?? (await supabase.auth.getSession()).data.session;
       const currentUser = currentSession?.user ?? null;
-      const currentRole = currentUser ? await getUserRole(currentUser.id) : null;
+      const currentRole = currentUser
+        ? await getUserRole(currentUser.id)
+        : null;
 
       if (!active) {
         return;

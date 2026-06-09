@@ -14,7 +14,8 @@ const HERO_SLIDES = [
     alt: "Skyscrapers and a city expressway at sunrise",
   },
   {
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070",
+    image:
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070",
     alt: "Modern high-rise office building with glass facade",
   },
   {
@@ -22,11 +23,13 @@ const HERO_SLIDES = [
     alt: "Modern business district skyline at dusk",
   },
   {
-    image: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=2044",
+    image:
+      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&q=80&w=2044",
     alt: "Majestic city skyline featuring iconic skyscrapers",
   },
   {
-    image: "https://images.unsplash.com/photo-1542361345-89e58247f2d5?auto=format&fit=crop&q=80&w=2070",
+    image:
+      "https://images.unsplash.com/photo-1542361345-89e58247f2d5?auto=format&fit=crop&q=80&w=2070",
     alt: "Dramatic city skyscrapers bathed in golden sunset light",
   },
 ] as const;

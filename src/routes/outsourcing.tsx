@@ -210,7 +210,7 @@ function OutsourcingPage() {
               <Reveal
                 key={s.title}
                 variant="up"
-                delay={String(i * 0.1) as any}
+                delay={String(Math.min(i, 4)) as any}
                 className="group rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-xl"
               >
                 <div
@@ -246,7 +246,7 @@ function OutsourcingPage() {
                 key={item.title}
                 className="flex items-start gap-6 p-6"
                 variant="up"
-                delay={String(i * 0.1) as any}
+                delay={String(Math.min(i, 4)) as any}
               >
                 <div
                   className={cn(

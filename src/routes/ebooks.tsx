@@ -158,7 +158,7 @@ function EbooksPage() {
                 <Reveal
                   key={b.id}
                   variant="up"
-                  delay={(idx % 3) as any}
+                  delay={String(idx % 3) as any}
                   data-magnetic="true"
                   className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-500 hover:border-primary/40 hover:shadow-[var(--shadow-elegant)]"
                 >

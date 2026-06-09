@@ -172,7 +172,7 @@ function ContactPage() {
               key={loc.city}
               className="group relative flex flex-col rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/40 hover:shadow-xl hover:-translate-y-1"
               variant="up"
-              delay={String(i) as any}
+              delay={String(Math.min(i, 4)) as any}
             >
               <div className="mb-6 flex items-center justify-between">
                 <span className="text-3xl filter grayscale group-hover:grayscale-0 transition-all duration-500">

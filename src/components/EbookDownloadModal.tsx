@@ -32,7 +32,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface EbookDownloadModalProps {
-  ebook: Record<string, unknown> | null;
+  ebook: any | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }

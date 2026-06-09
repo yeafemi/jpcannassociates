@@ -699,7 +699,37 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce), .reduced-motion {
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .motion-reveal,
+  .motion-reveal[data-visible="true"] {
+    opacity: 1;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .cursor-aura,
+  .brand-loader__ring,
+  .brand-loader__core,
+  .brand-loader__shine,
+  .hero-slideshow__progress-bar,
+  .interactive-lift,
+  .interactive-lift:hover,
+  .float-gentle {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .hero-slideshow__slide,
+  .hero-slideshow__slide[data-active="true"] {
+    transition: none !important;
+  }
+}
+
+.reduced-motion {
   html {
     scroll-behavior: auto;
   }

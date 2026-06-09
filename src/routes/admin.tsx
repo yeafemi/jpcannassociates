@@ -95,8 +95,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-
-
 export const Route = createFileRoute("/admin")({
   beforeLoad: async ({ location }) => {
     // Skip guard for the login child route to avoid redirect loops
@@ -281,7 +279,12 @@ function AdminPage() {
     },
     { id: "users", label: "Users", icon: Shield, color: "text-slate-500" },
     { id: "audit", label: "Audit Log", icon: History, color: "text-gray-500" },
-    { id: "settings", label: "Settings", icon: Settings, color: "text-gray-600" },
+    {
+      id: "settings",
+      label: "Settings",
+      icon: Settings,
+      color: "text-gray-600",
+    },
   ];
 
   return (
@@ -345,7 +348,7 @@ function AdminPage() {
               onClick={async () => {
                 await signOut();
                 toast.success("Signed out.");
-                navigate({ to: "/admin/login" });
+                navigate({ to: "/admin/login", search: { redirect: "/admin" } });
               }}
             >
               <LogOut size={16} />
@@ -659,7 +662,7 @@ function TrainingsAdmin() {
       const rows = lines.slice(1).map((line) => {
         // Simple CSV parser that handles commas inside quotes
         const regex = /(".*?"|[^",]+)(?=\s*,|\s*$)/g;
-        const matches = [];
+        const matches: string[] = [];
         let m;
         while ((m = regex.exec(line)) !== null) {
           matches.push(m[0].replace(/^"|"$/g, "").trim());
@@ -1478,7 +1481,8 @@ function StatCard({
             className={cn(
               "flex h-9 w-9 items-center justify-center rounded-lg bg-primary/5 transition-all duration-300",
               color,
-              onClick && "group-hover:bg-primary group-hover:text-primary-foreground",
+              onClick &&
+                "group-hover:bg-primary group-hover:text-primary-foreground",
             )}
           >
             <Icon size={16} />
@@ -1666,7 +1670,9 @@ function OverviewAdmin({
               className="h-24 flex-col gap-2 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 group transition-all"
             >
               <Plus className="text-emerald-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold group-hover:text-emerald-900 transition-colors">New Training</span>
+              <span className="text-xs font-semibold group-hover:text-emerald-900 transition-colors">
+                New Training
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -1674,7 +1680,9 @@ function OverviewAdmin({
               className="h-24 flex-col gap-2 rounded-xl hover:bg-orange-50 hover:border-orange-200 group transition-all"
             >
               <Download className="text-orange-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold group-hover:text-orange-900 transition-colors">Export Leads</span>
+              <span className="text-xs font-semibold group-hover:text-orange-900 transition-colors">
+                Export Leads
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -1682,7 +1690,9 @@ function OverviewAdmin({
               className="h-24 flex-col gap-2 rounded-xl hover:bg-purple-50 hover:border-purple-200 group transition-all"
             >
               <UserRound className="text-purple-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold group-hover:text-purple-900 transition-colors">New Profile</span>
+              <span className="text-xs font-semibold group-hover:text-purple-900 transition-colors">
+                New Profile
+              </span>
             </Button>
             <Button
               variant="outline"
@@ -1690,7 +1700,9 @@ function OverviewAdmin({
               className="h-24 flex-col gap-2 rounded-xl hover:bg-blue-50 hover:border-blue-200 group transition-all"
             >
               <Shield className="text-blue-600 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-semibold group-hover:text-blue-900 transition-colors">Site Logs</span>
+              <span className="text-xs font-semibold group-hover:text-blue-900 transition-colors">
+                Site Logs
+              </span>
             </Button>
           </div>
         </div>
@@ -2055,12 +2067,16 @@ function PortfolioEditor({
             <Input value={title} onChange={(e) => setTitle(e.target.value)} />
           </Field>
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label={isNew ? "Slug (URL)" : "Slug (URL) — fixed after creation"}>
+            <Field
+              label={isNew ? "Slug (URL)" : "Slug (URL) — fixed after creation"}
+            >
               <Input
                 value={itemKey}
                 readOnly={!isNew}
                 onChange={(e) => isNew && setItemKey(slugify(e.target.value))}
-                className={!isNew ? "opacity-60 cursor-not-allowed bg-muted" : ""}
+                className={
+                  !isNew ? "opacity-60 cursor-not-allowed bg-muted" : ""
+                }
               />
             </Field>
             <Field label="Category">
@@ -2204,6 +2220,8 @@ function PortfolioEditor({
 
 /* ────────────────────────────  USERS ADMIN  ──────────────────────────── */
 
+type UserRole = "admin" | "editor";
+
 type ProfileRow = {
   user_id: string;
   display_name: string | null;
@@ -2307,7 +2325,11 @@ function UsersAdmin() {
           </p>
         </div>
         {isAdmin && (
-          <Button onClick={() => setIsAddingUser(true)} size="sm" className="gap-2">
+          <Button
+            onClick={() => setIsAddingUser(true)}
+            size="sm"
+            className="gap-2"
+          >
             <Plus size={14} /> Add User
           </Button>
         )}
@@ -2395,7 +2417,8 @@ function UsersAdmin() {
                           variant="outline"
                           className={cn(
                             "h-8 text-[10px] font-bold",
-                            r.role === "admin" && "bg-emerald-50 border-emerald-200 text-emerald-700"
+                            r.role === "admin" &&
+                              "bg-emerald-50 border-emerald-200 text-emerald-700",
                           )}
                           onClick={() => updateRole(r.user_id, "admin")}
                         >
@@ -2406,7 +2429,8 @@ function UsersAdmin() {
                           variant="outline"
                           className={cn(
                             "h-8 text-[10px] font-bold",
-                            r.role === "editor" && "bg-blue-50 border-blue-200 text-blue-700"
+                            r.role === "editor" &&
+                              "bg-blue-50 border-blue-200 text-blue-700",
                           )}
                           onClick={() => updateRole(r.user_id, "editor")}
                         >
@@ -2417,7 +2441,7 @@ function UsersAdmin() {
                           variant="outline"
                           className={cn(
                             "h-8 text-[10px] font-bold",
-                            !r.role && "bg-slate-100 border-slate-200"
+                            !r.role && "bg-slate-100 border-slate-200",
                           )}
                           onClick={() => updateRole(r.user_id, "member")}
                         >
@@ -2813,7 +2837,7 @@ function PersonEditor({
   onClose,
   onSaved,
 }: {
-  collectionKey: "staff" | "management";
+  collectionKey: "staff" | "management" | "facilitators";
   labelSingular: string;
   person: Person | null;
   onClose: () => void;
@@ -4069,21 +4093,25 @@ function AuditLogAdmin() {
 }
 
 function SettingsAdmin() {
-  const { 
-    theme, 
-    setTheme, 
-    reducedMotion, 
-    setReducedMotion, 
-    compactMode, 
-    setCompactMode 
+  const {
+    theme,
+    setTheme,
+    reducedMotion,
+    setReducedMotion,
+    compactMode,
+    setCompactMode,
   } = useTheme();
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-serif text-3xl font-bold text-foreground">Preferences</h2>
-          <p className="text-muted-foreground mt-1 text-sm">Personalize your dashboard experience.</p>
+          <h2 className="font-serif text-3xl font-bold text-foreground">
+            Preferences
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Personalize your dashboard experience.
+          </p>
         </div>
       </div>
 
@@ -4096,7 +4124,9 @@ function SettingsAdmin() {
             </div>
             <div>
               <h3 className="font-bold text-foreground">Appearance</h3>
-              <p className="text-xs text-muted-foreground">Select your preferred visual style.</p>
+              <p className="text-xs text-muted-foreground">
+                Select your preferred visual style.
+              </p>
             </div>
           </div>
 
@@ -4113,7 +4143,7 @@ function SettingsAdmin() {
                   "flex flex-col items-center gap-3 rounded-2xl border-2 p-4 transition-all duration-300",
                   theme === t.id
                     ? "border-primary bg-primary/5 text-primary shadow-lg shadow-primary/5"
-                    : "border-transparent bg-muted hover:bg-muted/80 text-muted-foreground"
+                    : "border-transparent bg-muted hover:bg-muted/80 text-muted-foreground",
                 )}
               >
                 <t.icon size={24} />
@@ -4131,7 +4161,9 @@ function SettingsAdmin() {
             </div>
             <div>
               <h3 className="font-bold text-foreground">Interface</h3>
-              <p className="text-xs text-muted-foreground">Configure accessibility and layout.</p>
+              <p className="text-xs text-muted-foreground">
+                Configure accessibility and layout.
+              </p>
             </div>
           </div>
 
@@ -4142,12 +4174,11 @@ function SettingsAdmin() {
                   <Minimize2 size={14} className="text-muted-foreground" />
                   <Label className="text-sm font-bold">Compact Mode</Label>
                 </div>
-                <p className="text-xs text-muted-foreground">Reduce padding and spacing.</p>
+                <p className="text-xs text-muted-foreground">
+                  Reduce padding and spacing.
+                </p>
               </div>
-              <Switch 
-                checked={compactMode} 
-                onCheckedChange={setCompactMode} 
-              />
+              <Switch checked={compactMode} onCheckedChange={setCompactMode} />
             </div>
 
             <div className="flex items-center justify-between border-t border-border pt-6">
@@ -4156,11 +4187,13 @@ function SettingsAdmin() {
                   <Activity size={14} className="text-muted-foreground" />
                   <Label className="text-sm font-bold">Reduced Motion</Label>
                 </div>
-                <p className="text-xs text-muted-foreground">Minimize animations and transitions.</p>
+                <p className="text-xs text-muted-foreground">
+                  Minimize animations and transitions.
+                </p>
               </div>
-              <Switch 
-                checked={reducedMotion} 
-                onCheckedChange={setReducedMotion} 
+              <Switch
+                checked={reducedMotion}
+                onCheckedChange={setReducedMotion}
               />
             </div>
           </div>

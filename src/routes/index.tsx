@@ -79,12 +79,7 @@ const clientele = [
 
 export const Route = createFileRoute("/")({
   component: Index,
-    links: [
-      {
-        rel: "canonical",
-        href: "https://yeafemi.github.io/jpcannassociates/",
-      },
-    ],
+  head: () => ({
     meta: [
       {
         title:
@@ -117,6 +112,7 @@ export const Route = createFileRoute("/")({
           "business advisory ghana, bpo ghana, iso training ghana, corporate training, internal audit outsourcing, esg consulting, grc services",
       },
     ],
+  }),
 });
 
 const services = [
@@ -427,7 +423,8 @@ function Index() {
                       Trusted by Leaders
                     </span>
                     <h2 className="font-serif text-4xl font-bold text-foreground md:text-6xl tracking-tight leading-tight">
-                      What Our <span className="text-primary italic">Clients</span> Say
+                      What Our{" "}
+                      <span className="text-primary italic">Clients</span> Say
                     </h2>
                     <div className="mt-6 mx-auto h-1 w-20 bg-linear-to-r from-primary to-accent rounded-full" />
                   </Reveal>
@@ -449,26 +446,26 @@ function Index() {
                       >
                         <Reveal
                           variant="up"
-                          delay={i * 0.1}
+                          delay={String(Math.min(i, 4)) as "0" | "1" | "2" | "3" | "4"}
                           className="group h-full"
                         >
                           <div className="relative h-full flex flex-col rounded-3xl border border-white/40 bg-white/40 backdrop-blur-md p-10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-500 hover:bg-white/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden">
                             {/* Decorative Quote Icon Background */}
-                            <Quote 
-                              className="absolute -top-4 -right-4 text-primary/5 transition-transform duration-700 group-hover:scale-150 group-hover:rotate-12" 
-                              size={120} 
+                            <Quote
+                              className="absolute -top-4 -right-4 text-primary/5 transition-transform duration-700 group-hover:scale-150 group-hover:rotate-12"
+                              size={120}
                             />
-                            
+
                             <div className="relative z-10 flex-1">
                               <div className="inline-flex items-center justify-center h-12 w-12 rounded-2xl bg-linear-to-br from-primary/10 to-accent/10 border border-primary/20 mb-8">
                                 <Quote className="text-primary" size={24} />
                               </div>
-                              
+
                               <p className="font-serif text-xl italic leading-relaxed text-foreground/90 font-medium">
                                 "{t.title}"
                               </p>
                             </div>
-                            
+
                             <div className="relative z-10 mt-10 pt-8 border-t border-slate-200/60 flex items-center gap-4">
                               <div>
                                 <p className="font-bold text-foreground text-lg tracking-tight">

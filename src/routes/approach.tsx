@@ -147,7 +147,7 @@ function ApproachPage() {
               <Reveal
                 key={m.phase}
                 variant="right"
-                delay={String(i * 0.1) as any}
+                delay={String(Math.min(i, 4)) as any}
                 className="relative"
               >
                 <div className="grid lg:grid-cols-[auto_1fr] gap-8 items-start">

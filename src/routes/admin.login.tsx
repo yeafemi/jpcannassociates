@@ -131,8 +131,8 @@ function AdminLoginPage() {
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-950 font-sans">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070" 
+        <img
+          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=2070"
           alt="Modern Architecture"
           className="h-full w-full object-cover opacity-50 scale-105 animate-in fade-in zoom-in duration-1000"
         />
@@ -150,16 +150,20 @@ function AdminLoginPage() {
             <div className="h-14 w-14 flex items-center justify-center rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl">
               <ShieldCheck size={32} className="text-accent" />
             </div>
-            <h2 className="text-3xl font-serif font-bold text-white tracking-tight">JPCann Admin</h2>
+            <h2 className="text-3xl font-serif font-bold text-white tracking-tight">
+              JPCann Admin
+            </h2>
           </div>
 
           <div className="space-y-6">
             <h1 className="text-6xl font-serif font-bold text-white leading-[1.1]">
-              Elevating <span className="text-accent">Excellence</span> through Digital Control.
+              Elevating <span className="text-accent">Excellence</span> through
+              Digital Control.
             </h1>
             <p className="text-xl text-slate-300 max-w-lg leading-relaxed">
-              Welcome to the secure administrative portal. Manage your global presence, 
-              content, and professional services with a single, unified interface.
+              Welcome to the secure administrative portal. Manage your global
+              presence, content, and professional services with a single,
+              unified interface.
             </p>
           </div>
         </section>
@@ -169,13 +173,17 @@ function AdminLoginPage() {
           <div className="w-full max-w-md backdrop-blur-2xl bg-white/5 border border-white/10 rounded-[2.5rem] p-10 shadow-2xl relative overflow-hidden float-gentle">
             {/* Form Glow */}
             <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[60px]" />
-            
+
             <div className="relative mb-10">
               <div className="h-12 w-12 flex items-center justify-center rounded-xl bg-accent/20 text-accent mb-6">
                 <LockKeyhole size={24} />
               </div>
-              <h3 className="text-3xl font-serif font-bold text-white">Secure Login</h3>
-              <p className="text-slate-400 mt-2">Enter your credentials to continue.</p>
+              <h3 className="text-3xl font-serif font-bold text-white">
+                Secure Login
+              </h3>
+              <p className="text-slate-400 mt-2">
+                Enter your credentials to continue.
+              </p>
             </div>
 
             <Form {...form}>
@@ -185,7 +193,9 @@ function AdminLoginPage() {
                   name="username"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-slate-300 font-medium">Username</FormLabel>
+                      <FormLabel className="text-slate-300 font-medium">
+                        Username
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="text"
@@ -205,7 +215,9 @@ function AdminLoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem className="space-y-2">
-                      <FormLabel className="text-slate-300 font-medium">Password</FormLabel>
+                      <FormLabel className="text-slate-300 font-medium">
+                        Password
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="password"
@@ -220,9 +232,9 @@ function AdminLoginPage() {
                   )}
                 />
 
-                <Button 
-                  type="submit" 
-                  className="w-full h-14 bg-accent hover:bg-accent/90 text-white font-bold rounded-2xl text-lg shadow-xl shadow-accent/20 transition-all hover:shadow-accent/40 hover:-translate-y-1 active:scale-[0.98]" 
+                <Button
+                  type="submit"
+                  className="w-full h-14 bg-accent hover:bg-accent/90 text-white font-bold rounded-2xl text-lg shadow-xl shadow-accent/20 transition-all hover:shadow-accent/40 hover:-translate-y-1 active:scale-[0.98]"
                   disabled={submitting}
                 >
                   {submitting ? (
@@ -230,7 +242,9 @@ function AdminLoginPage() {
                       <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       Signing in...
                     </span>
-                  ) : "Access Dashboard"}
+                  ) : (
+                    "Access Dashboard"
+                  )}
                 </Button>
               </form>
             </Form>

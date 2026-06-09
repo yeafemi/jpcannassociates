@@ -278,7 +278,7 @@ function AdvisoryPage() {
                 key={item.title}
                 className="group flex flex-col rounded-2xl border border-border bg-card p-8 transition-all hover:border-primary/50 hover:shadow-xl"
                 variant="up"
-                delay={String(i) as any}
+                delay={String(Math.min(i, 4)) as any}
               >
                 <div
                   className={cn(

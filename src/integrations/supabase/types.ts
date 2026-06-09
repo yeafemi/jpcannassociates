@@ -280,9 +280,81 @@ export type Database = {
         };
         Relationships: [];
       };
+      audit_logs: {
+        Row: {
+          action_type: string;
+          created_at: string;
+          details: Json;
+          id: string;
+          resource_name: string | null;
+          resource_type: string;
+          user_id: string;
+        };
+        Insert: {
+          action_type: string;
+          created_at?: string;
+          details?: Json;
+          id?: string;
+          resource_name?: string | null;
+          resource_type: string;
+          user_id: string;
+        };
+        Update: {
+          action_type?: string;
+          created_at?: string;
+          details?: Json;
+          id?: string;
+          resource_name?: string | null;
+          resource_type?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      contact_submissions: {
+        Row: {
+          created_at: string;
+          email: string;
+          full_name: string;
+          id: string;
+          message: string;
+          organisation: string | null;
+          subject: string;
+        };
+        Insert: {
+          created_at?: string;
+          email: string;
+          full_name: string;
+          id?: string;
+          message: string;
+          organisation?: string | null;
+          subject: string;
+        };
+        Update: {
+          created_at?: string;
+          email?: string;
+          full_name?: string;
+          id?: string;
+          message?: string;
+          organisation?: string | null;
+          subject?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
-      [_ in never]: never;
+      audit_logs_with_users: {
+        Row: {
+          action_type: string;
+          created_at: string;
+          details: Json;
+          id: string;
+          resource_name: string | null;
+          resource_type: string;
+          user_id: string;
+          user_name: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       has_role: {
@@ -294,7 +366,7 @@ export type Database = {
       };
     };
     Enums: {
-      app_role: "admin";
+      app_role: "admin" | "editor";
     };
     CompositeTypes: {
       [_ in never]: never;
@@ -425,7 +497,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin"],
+      app_role: ["admin", "editor"],
     },
   },
 } as const;
