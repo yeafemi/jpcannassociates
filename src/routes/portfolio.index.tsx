@@ -13,6 +13,7 @@ import {
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { getDirectImageUrl } from "@/utils/image";
 import handshakeImg from "@/assets/portfolio-handshake.jpg";
 
 const CATEGORIES = [
@@ -371,7 +372,7 @@ function PortfolioCard({ item, index }: { item: PortfolioRow; index: number }) {
       >
         <div className="relative h-52 overflow-hidden">
           <img
-            src={item.image_url ?? ""}
+            src={getDirectImageUrl(item.image_url)}
             alt={item.title}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"

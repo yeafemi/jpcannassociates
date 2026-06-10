@@ -5,6 +5,7 @@ import { SiteLayout } from "@/components/SiteLayout";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { getDirectImageUrl } from "@/utils/image";
 
 type BlogPost = {
   id: string;
@@ -79,7 +80,7 @@ function BlogPostPage() {
         {/* Post Header */}
         <header className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
           <img
-            src={post.image_url ?? ""}
+            src={getDirectImageUrl(post.image_url)}
             alt={post.title}
             className="h-full w-full object-cover"
           />

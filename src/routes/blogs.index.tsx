@@ -5,6 +5,7 @@ import { SiteLayout, PageHero } from "@/components/SiteLayout";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { getDirectImageUrl } from "@/utils/image";
 
 type BlogPost = {
   id: string;
@@ -94,7 +95,7 @@ function BlogPage() {
                   className="relative aspect-video overflow-hidden rounded-2xl bg-secondary/20 shadow-sm transition-all hover:shadow-lg"
                 >
                   <img
-                    src={post.image_url ?? ""}
+                    src={getDirectImageUrl(post.image_url)}
                     alt={post.title}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />

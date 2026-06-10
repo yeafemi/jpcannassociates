@@ -12,6 +12,7 @@ import {
 import { SiteLayout } from "@/components/SiteLayout";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { getDirectImageUrl } from "@/utils/image";
 
 type PortfolioDetail = {
   id: string;
@@ -67,8 +68,8 @@ export const Route = createFileRoute("/portfolio/$slug")({
         },
         ...(p.image_url
           ? [
-              { property: "og:image", content: p.image_url },
-              { name: "twitter:image", content: p.image_url },
+              { property: "og:image", content: getDirectImageUrl(p.image_url) },
+              { name: "twitter:image", content: getDirectImageUrl(p.image_url) },
               { name: "twitter:card", content: "summary_large_image" },
             ]
           : []),
@@ -146,7 +147,7 @@ function PortfolioDetailPage() {
           <div
             aria-hidden
             className="absolute inset-0 opacity-30 [background-position:center] [background-size:cover]"
-            style={{ backgroundImage: `url(${p.image_url})` }}
+            style={{ backgroundImage: `url(${getDirectImageUrl(p.image_url)})` }}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/70" />

@@ -59,6 +59,7 @@ import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
 import { logAudit } from "@/utils/audit";
+import { getDirectImageUrl } from "@/utils/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -2135,7 +2136,7 @@ function PortfolioEditor({
               {imageUrl && (
                 <div className="relative aspect-video w-full overflow-hidden rounded-md border border-border">
                   <img
-                    src={imageUrl}
+                    src={getDirectImageUrl(imageUrl)}
                     alt="Preview"
                     className="h-full w-full object-cover"
                   />
@@ -2739,7 +2740,7 @@ function PeopleAdmin({
                   <TableCell>
                     {p.image_url ? (
                       <img
-                        src={p.image_url}
+                        src={getDirectImageUrl(p.image_url)}
                         alt={p.title}
                         className="h-12 w-12 rounded-md object-cover"
                       />
@@ -2965,7 +2966,7 @@ function PersonEditor({
             <div className="space-y-3">
               {imageUrl && (
                 <img
-                  src={imageUrl}
+                  src={getDirectImageUrl(imageUrl)}
                   alt="Preview"
                   className="h-32 w-32 rounded-md border border-border object-cover"
                 />
@@ -3489,7 +3490,7 @@ function EbookEditor({
               {imageUrl && (
                 <div className="relative aspect-[3/4] w-32 overflow-hidden rounded-md border border-border mx-auto">
                   <img
-                    src={imageUrl}
+                    src={getDirectImageUrl(imageUrl)}
                     alt="Preview"
                     className="h-full w-full object-cover"
                   />
@@ -3863,7 +3864,7 @@ function BlogEditor({
               {imageUrl && (
                 <div className="relative aspect-video w-full max-w-md overflow-hidden rounded-md border border-border">
                   <img
-                    src={imageUrl}
+                    src={getDirectImageUrl(imageUrl)}
                     alt="Preview"
                     className="h-full w-full object-cover"
                   />

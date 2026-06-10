@@ -11,6 +11,7 @@ import {
 import { SiteLayout } from "@/components/SiteLayout";
 import { HeroSlideshow } from "@/components/HeroSlideshow";
 import { Reveal } from "@/components/Reveal";
+import { getDirectImageUrl } from "@/utils/image";
 import heroSlide1 from "@/assets/hero-slide-1.jpg";
 import aboutLeadership from "@/assets/about-leadership.jpg";
 import accIia from "@/assets/accreditations/iia.jpg";
@@ -222,11 +223,11 @@ function Index() {
     : stats;
 
   const displayAccreditations = dbAccreditations?.length
-    ? dbAccreditations.map((a) => ({ src: a.image_url, alt: a.title }))
+    ? dbAccreditations.map((a) => ({ src: getDirectImageUrl(a.image_url), alt: a.title }))
     : accreditations;
 
   const displayClientele = dbClientele?.length
-    ? dbClientele.map((c) => ({ src: c.image_url, alt: c.title }))
+    ? dbClientele.map((c) => ({ src: getDirectImageUrl(c.image_url), alt: c.title }))
     : clientele;
 
   React.useEffect(() => {

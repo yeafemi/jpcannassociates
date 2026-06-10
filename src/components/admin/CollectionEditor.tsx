@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getDirectImageUrl } from "@/utils/image";
 import {
   Plus,
   Search,
@@ -209,7 +210,7 @@ export function CollectionEditor({
                       {item.image_url ? (
                         <div className="h-12 w-12 overflow-hidden rounded-lg border border-border bg-muted">
                           <img
-                            src={item.image_url}
+                            src={getDirectImageUrl(item.image_url)}
                             alt={item.title}
                             className="h-full w-full object-contain p-1"
                           />
@@ -513,7 +514,7 @@ function ItemEditor({
                 {imageUrl ? (
                   <div className="relative group mx-auto h-40 w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card shadow-sm">
                     <img
-                      src={imageUrl}
+                      src={getDirectImageUrl(imageUrl)}
                       alt="Preview"
                       className="h-full w-full object-contain p-4"
                     />

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Search, UserRound } from "lucide-react";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { getDirectImageUrl } from "@/utils/image";
 
 export type PersonRow = {
   id: string;
@@ -64,7 +65,7 @@ export function PeopleGrid({
             <div className="relative aspect-[4/5] overflow-hidden bg-secondary/40">
               {p.image_url ? (
                 <img
-                  src={p.image_url}
+                  src={getDirectImageUrl(p.image_url)}
                   alt={p.title}
                   loading="lazy"
                   className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"

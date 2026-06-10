@@ -10,6 +10,7 @@ import {
 import { SiteLayout, PageHero } from "@/components/SiteLayout";
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { getDirectImageUrl } from "@/utils/image";
 import { EbookDownloadModal } from "@/components/EbookDownloadModal";
 
 type EbookRow = {
@@ -164,7 +165,7 @@ function EbooksPage() {
                 >
                   <div className="relative h-64 overflow-hidden bg-secondary/20">
                     <img
-                      src={b.image_url ?? ""}
+                      src={getDirectImageUrl(b.image_url)}
                       alt={b.title}
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getDirectImageUrl } from "@/utils/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -251,7 +252,7 @@ export function SitePageEditor({ pageKey }: { pageKey: string }) {
               {page.hero_image_url && (
                 <div className="group relative mt-2 aspect-video overflow-hidden rounded-xl border border-border bg-muted">
                   <img
-                    src={page.hero_image_url}
+                    src={getDirectImageUrl(page.hero_image_url)}
                     alt="Hero preview"
                     className="h-full w-full object-cover"
                   />

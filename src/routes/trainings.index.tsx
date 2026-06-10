@@ -13,6 +13,7 @@ import { SiteLayout, PageHero } from "@/components/SiteLayout";
 import { Reveal } from "@/components/Reveal";
 import { OutlineModal, type OutlineTraining } from "@/components/OutlineModal";
 import { supabase } from "@/integrations/supabase/client";
+import { getDirectImageUrl } from "@/utils/image";
 
 const THEMATIC_AREAS = [
   "All Thematic Areas",
@@ -451,7 +452,7 @@ function TrainingCard({
       >
         <div className="relative h-52 overflow-hidden">
           <img
-            src={training.image_url ?? ""}
+            src={getDirectImageUrl(training.image_url)}
             alt={training.title}
             loading="lazy"
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
