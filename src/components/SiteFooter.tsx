@@ -57,6 +57,14 @@ export function SiteFooter() {
             </li>
             <li>
               <Link
+                to="/awards"
+                className="story-link-soft transition-colors duration-200 hover:text-accent"
+              >
+                Awards
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/portfolio"
                 className="story-link-soft transition-colors duration-200 hover:text-accent"
               >
@@ -84,6 +92,14 @@ export function SiteFooter() {
                 className="story-link-soft transition-colors duration-200 hover:text-accent"
               >
                 E-books
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/brochures"
+                className="story-link-soft transition-colors duration-200 hover:text-accent"
+              >
+                Training Brochures
               </Link>
             </li>
             <li>

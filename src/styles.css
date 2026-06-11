@@ -333,6 +333,7 @@
 
   .motion-reveal[data-visible="true"] {
     opacity: 1;
+    --reveal-progress: 1;
   }
 
   .motion-up {

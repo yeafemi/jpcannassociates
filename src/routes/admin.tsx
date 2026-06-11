@@ -49,6 +49,9 @@ import {
   Minimize2,
   Activity,
   BookOpen,
+  GripVertical,
+  Megaphone,
+  Trophy,
 } from "lucide-react";
 import { SitePageEditor } from "@/components/admin/SitePageEditor";
 import { CollectionEditor } from "@/components/admin/CollectionEditor";
@@ -220,12 +223,30 @@ function AdminPage() {
       color: "text-indigo-500",
     },
     {
+      id: "banner",
+      label: "Site Banner",
+      icon: Megaphone,
+      color: "text-amber-500",
+    },
+    {
       id: "trainings",
       label: "Trainings",
       icon: GraduationCap,
       color: "text-emerald-500",
     },
     { id: "ebooks", label: "E-books", icon: BookOpen, color: "text-amber-600" },
+    {
+      id: "brochures",
+      label: "Brochures",
+      icon: SwatchBook,
+      color: "text-purple-600",
+    },
+    {
+      id: "awards",
+      label: "Awards",
+      icon: Trophy,
+      color: "text-amber-500",
+    },
     { id: "blog", label: "Blog", icon: FileText, color: "text-rose-500" },
     {
       id: "clients",
@@ -349,7 +370,10 @@ function AdminPage() {
               onClick={async () => {
                 await signOut();
                 toast.success("Signed out.");
-                navigate({ to: "/admin/login", search: { redirect: "/admin" } });
+                navigate({
+                  to: "/admin/login",
+                  search: { redirect: "/admin" },
+                });
               }}
             >
               <LogOut size={16} />
@@ -393,6 +417,16 @@ function AdminPage() {
             {activeTab === "ebooks" && (
               <Reveal variant="up">
                 <EbooksAdmin />
+              </Reveal>
+            )}
+            {activeTab === "brochures" && (
+              <Reveal variant="up">
+                <BrochuresAdmin />
+              </Reveal>
+            )}
+            {activeTab === "awards" && (
+              <Reveal variant="up">
+                <AwardsAdmin />
               </Reveal>
             )}
             {activeTab === "blog" && (
@@ -505,6 +539,11 @@ function AdminPage() {
             {activeTab === "content" && (
               <Reveal variant="up">
                 <PageContentEditor />
+              </Reveal>
+            )}
+            {activeTab === "banner" && (
+              <Reveal variant="up">
+                <BannerAdmin />
               </Reveal>
             )}
             {activeTab === "enquiries" && (
@@ -3207,6 +3246,12 @@ function EbooksAdmin() {
   const [editing, setEditing] = useState<any | "new" | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
 
+  // Drag and drop states
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const isReorderEnabled = query.trim() === "";
+
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -3251,6 +3296,69 @@ function EbooksAdmin() {
     }
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (!isReorderEnabled) return;
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedIndex(index);
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    if (!isReorderEnabled || draggedIndex === null) return;
+    e.preventDefault();
+    if (index !== dragOverIndex) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    if (!isReorderEnabled || draggedIndex === null) return;
+    e.preventDefault();
+
+    if (draggedIndex !== targetIndex) {
+      const updated = [...items];
+      const [draggedItem] = updated.splice(draggedIndex, 1);
+      updated.splice(targetIndex, 0, draggedItem);
+
+      // Optimistic local update
+      setItems(updated);
+
+      setLoading(true);
+      const updates = updated.map((item, index) => {
+        return supabase
+          .from("site_collections")
+          .update({ sort_order: index })
+          .eq("id", item.id);
+      });
+
+      try {
+        const results = await Promise.all(updates);
+        const hasError = results.some((r) => r.error);
+        if (hasError) {
+          toast.error("Failed to save new order in database");
+          load();
+        } else {
+          toast.success("E-books order updated successfully");
+        }
+      } catch (err) {
+        console.error("Failed to update order:", err);
+        toast.error("Error updating order");
+        load();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -3266,13 +3374,20 @@ function EbooksAdmin() {
             className="pl-9"
           />
         </div>
-        <Button onClick={() => setEditing("new")} size="sm">
-          <Plus size={14} /> New e-book
-        </Button>
+        <div className="flex items-center gap-3">
+          {isReorderEnabled && items.length > 1 && (
+            <span className="text-xs text-muted-foreground hidden sm:inline-block">
+              Drag rows to reorder e-books
+            </span>
+          )}
+          <Button onClick={() => setEditing("new")} size="sm">
+            <Plus size={14} /> New e-book
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card">
-        {loading ? (
+        {loading && items.length === 0 ? (
           <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
             <Loader2 className="mr-2 animate-spin" size={16} /> Loading e-books…
           </div>
@@ -3284,14 +3399,32 @@ function EbooksAdmin() {
           <Table>
             <TableHeader>
               <TableRow>
+                {isReorderEnabled && <TableHead className="w-10"></TableHead>}
                 <TableHead>E-book</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((t) => (
-                <TableRow key={t.id}>
+              {filtered.map((t, idx) => (
+                <TableRow
+                  key={t.id}
+                  draggable={isReorderEnabled}
+                  onDragStart={(e) => handleDragStart(e, idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={(e) => handleDrop(e, idx)}
+                  onDragEnd={handleDragEnd}
+                  className={cn(
+                    isReorderEnabled && "transition-colors duration-150",
+                    draggedIndex === idx && "opacity-45 bg-muted/40",
+                    dragOverIndex === idx && "border-t-2 border-primary/50",
+                  )}
+                >
+                  {isReorderEnabled && (
+                    <TableCell className="w-10 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
+                      <GripVertical size={16} />
+                    </TableCell>
+                  )}
                   <TableCell>
                     <div className="font-medium">{t.title}</div>
                     <div className="text-xs text-muted-foreground">
@@ -3583,6 +3716,494 @@ function EbookEditor({
           </div>
           <Button className="w-full" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save E-book"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* ────────────────────────────  TRAINING BROCHURES ADMIN  ──────────────────────────── */
+
+function BrochuresAdmin() {
+  const { isAdmin } = useAuth();
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [editing, setEditing] = useState<any | "new" | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
+
+  // Drag and drop states
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const isReorderEnabled = query.trim() === "";
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("site_collections")
+      .select("*")
+      .eq("collection_key", "brochures")
+      .order("sort_order", { ascending: true });
+    if (error) toast.error("Could not load brochures");
+    else setItems(data ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        (t.subtitle ?? "").toLowerCase().includes(q),
+    );
+  }, [items, query]);
+
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    const { error } = await supabase
+      .from("site_collections")
+      .delete()
+      .eq("id", confirmDelete.id);
+    if (error) toast.error("Could not delete brochure");
+    else {
+      toast.success("Brochure deleted");
+      logAudit({
+        action_type: "DELETE",
+        resource_type: "brochure",
+        resource_name: confirmDelete.title,
+      });
+      setConfirmDelete(null);
+      load();
+    }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (!isReorderEnabled) return;
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedIndex(index);
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    if (!isReorderEnabled || draggedIndex === null) return;
+    e.preventDefault();
+    if (index !== dragOverIndex) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    if (!isReorderEnabled || draggedIndex === null) return;
+    e.preventDefault();
+
+    if (draggedIndex !== targetIndex) {
+      const updated = [...items];
+      const [draggedItem] = updated.splice(draggedIndex, 1);
+      updated.splice(targetIndex, 0, draggedItem);
+
+      // Optimistic local update
+      setItems(updated);
+
+      setLoading(true);
+      const updates = updated.map((item, index) => {
+        return supabase
+          .from("site_collections")
+          .update({ sort_order: index })
+          .eq("id", item.id);
+      });
+
+      try {
+        const results = await Promise.all(updates);
+        const hasError = results.some((r) => r.error);
+        if (hasError) {
+          toast.error("Failed to save new order in database");
+          load();
+        } else {
+          toast.success("Brochures order updated successfully");
+        }
+      } catch (err) {
+        console.error("Failed to update order:", err);
+        toast.error("Error updating order");
+        load();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="relative md:max-w-sm md:flex-1">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search brochures…"
+            className="pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-3">
+          {isReorderEnabled && items.length > 1 && (
+            <span className="text-xs text-muted-foreground hidden sm:inline-block">
+              Drag rows to reorder brochures
+            </span>
+          )}
+          <Button onClick={() => setEditing("new")} size="sm">
+            <Plus size={14} /> New brochure
+          </Button>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        {loading && items.length === 0 ? (
+          <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 animate-spin" size={16} /> Loading
+            brochures…
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            No brochures found.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {isReorderEnabled && <TableHead className="w-10"></TableHead>}
+                <TableHead>Brochure</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((t, idx) => (
+                <TableRow
+                  key={t.id}
+                  draggable={isReorderEnabled}
+                  onDragStart={(e) => handleDragStart(e, idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={(e) => handleDrop(e, idx)}
+                  onDragEnd={handleDragEnd}
+                  className={cn(
+                    isReorderEnabled && "transition-colors duration-150",
+                    draggedIndex === idx && "opacity-45 bg-muted/40",
+                    dragOverIndex === idx && "border-t-2 border-primary/50",
+                  )}
+                >
+                  {isReorderEnabled && (
+                    <TableCell className="w-10 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
+                      <GripVertical size={16} />
+                    </TableCell>
+                  )}
+                  <TableCell>
+                    <div className="font-medium">{t.title}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {t.subtitle}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {t.is_published ? (
+                      <Badge variant="outline">Published</Badge>
+                    ) : (
+                      <Badge variant="secondary">Draft</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditing(t)}
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(t)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
+      {editing && (
+        <BrochureEditor
+          brochure={editing === "new" ? null : editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
+            load();
+          }}
+        />
+      )}
+
+      <AlertDialog
+        open={confirmDelete !== null}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this brochure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function BrochureEditor({
+  brochure,
+  onClose,
+  onSaved,
+}: {
+  brochure: any | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const isNew = brochure === null;
+  const [title, setTitle] = useState(brochure?.title ?? "");
+  const [itemKey, setItemKey] = useState(brochure?.item_key ?? "");
+  const [subtitle, setSubtitle] = useState(brochure?.subtitle ?? "");
+  const [description, setDescription] = useState(brochure?.description ?? "");
+  const [imageUrl, setImageUrl] = useState(brochure?.image_url ?? "");
+  const [published, setPublished] = useState(brochure?.is_published ?? true);
+  const [filePath, setFilePath] = useState(brochure?.metadata?.file_path ?? "");
+  const [fileFilename, setFileFilename] = useState(
+    brochure?.metadata?.file_filename ?? "",
+  );
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const imageFileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isNew) setItemKey(slugify(title));
+  }, [title, isNew]);
+
+  const handleImageUpload = async (file: File) => {
+    if (!file) return;
+    const slugBase = itemKey || slugify(title) || `brochure-${Date.now()}`;
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const path = `brochure-covers/${slugBase}-${Date.now()}.${ext}`;
+    setImageUploading(true);
+    const { error: upErr } = await supabase.storage
+      .from("site-media")
+      .upload(path, file, { upsert: false, contentType: file.type });
+    if (upErr) {
+      setImageUploading(false);
+      toast.error("Image upload failed: " + upErr.message);
+      return;
+    }
+    const { data: pub } = supabase.storage
+      .from("site-media")
+      .getPublicUrl(path);
+    setImageUrl(pub.publicUrl);
+    setImageUploading(false);
+    toast.success("Cover image uploaded");
+  };
+
+  const handleFileUpload = async (file: File) => {
+    setUploading(true);
+    const path = `brochures/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage
+      .from("site-media")
+      .upload(path, file);
+    if (error) toast.error("Upload failed: " + error.message);
+    else {
+      setFilePath(path);
+      setFileFilename(file.name);
+      toast.success("File uploaded.");
+    }
+    setUploading(false);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const payload = {
+      collection_key: "brochures",
+      item_key: itemKey,
+      title,
+      subtitle,
+      description,
+      image_url: imageUrl,
+      is_published: published,
+      metadata: { file_path: filePath, file_filename: fileFilename } as any,
+    };
+    const { error } = isNew
+      ? await supabase.from("site_collections").insert([payload])
+      : await supabase
+          .from("site_collections")
+          .update(payload)
+          .eq("id", brochure.id);
+    if (error) toast.error("Save failed: " + error.message);
+    else {
+      toast.success("Brochure saved");
+      logAudit({
+        action_type: isNew ? "CREATE" : "UPDATE",
+        resource_type: "brochure",
+        resource_name: title,
+      });
+      onSaved();
+    }
+    setSaving(false);
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-xl">
+        <DialogHeader>
+          <DialogTitle>{isNew ? "New brochure" : "Edit brochure"}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <Field label="Title" required>
+            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+          </Field>
+          <Field label="Description">
+            <Textarea
+              rows={3}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </Field>
+          <Field label="Cover image">
+            <div className="space-y-3">
+              {imageUrl && (
+                <div className="relative aspect-[3/4] w-32 overflow-hidden rounded-md border border-border mx-auto">
+                  <img
+                    src={getDirectImageUrl(imageUrl)}
+                    alt="Preview"
+                    className="h-full w-full object-cover"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute right-1 top-1 h-6 w-6"
+                    onClick={() => setImageUrl("")}
+                  >
+                    <Trash2 size={12} />
+                  </Button>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Input
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="Paste cover image URL or upload..."
+                  className="flex-1"
+                />
+                <input
+                  ref={imageFileRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(file);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => imageFileRef.current?.click()}
+                  disabled={imageUploading}
+                >
+                  {imageUploading ? (
+                    <Loader2 className="mr-2 animate-spin" size={14} />
+                  ) : (
+                    <Upload className="mr-2" size={14} />
+                  )}
+                  Upload
+                </Button>
+              </div>
+            </div>
+          </Field>
+          <div className="rounded-lg border border-dashed p-4">
+            <p className="text-xs font-semibold uppercase text-muted-foreground">
+              Brochure PDF file
+            </p>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="text-sm truncate">
+                {fileFilename || "No file uploaded"}
+              </span>
+              <input
+                type="file"
+                ref={fileRef}
+                className="hidden"
+                accept=".pdf"
+                onChange={(e) =>
+                  e.target.files?.[0] && handleFileUpload(e.target.files[0])
+                }
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? (
+                  <Loader2 className="animate-spin" size={14} />
+                ) : (
+                  <Upload size={14} />
+                )}{" "}
+                Upload PDF
+              </Button>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="brochure_pub"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+            />
+            <label htmlFor="brochure_pub" className="text-sm font-medium">
+              Published
+            </label>
+          </div>
+          <Button className="w-full" onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Brochure"}
           </Button>
         </div>
       </DialogContent>
@@ -4092,6 +4713,1224 @@ function AuditLogAdmin() {
     </div>
   );
 }
+
+function AwardsAdmin() {
+  const { isAdmin } = useAuth();
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [editing, setEditing] = useState<any | "new" | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<any | null>(null);
+
+  // Drag and drop states
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+
+  const isReorderEnabled = query.trim() === "";
+
+  const load = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("site_collections")
+      .select("*")
+      .eq("collection_key", "awards")
+      .order("sort_order", { ascending: true });
+    if (error) toast.error("Could not load awards");
+    else setItems(data ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter(
+      (t) =>
+        t.title.toLowerCase().includes(q) ||
+        (t.subtitle ?? "").toLowerCase().includes(q),
+    );
+  }, [items, query]);
+
+  const handleDelete = async () => {
+    if (!confirmDelete) return;
+    const { error } = await supabase
+      .from("site_collections")
+      .delete()
+      .eq("id", confirmDelete.id);
+    if (error) toast.error("Could not delete award");
+    else {
+      toast.success("Award deleted");
+      logAudit({
+        action_type: "DELETE",
+        resource_type: "award",
+        resource_name: confirmDelete.title,
+      });
+      setConfirmDelete(null);
+      load();
+    }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    if (!isReorderEnabled) return;
+    e.dataTransfer.effectAllowed = "move";
+    setDraggedIndex(index);
+    e.dataTransfer.setData("text/plain", index.toString());
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    if (!isReorderEnabled || draggedIndex === null) return;
+    e.preventDefault();
+    if (index !== dragOverIndex) {
+      setDragOverIndex(index);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetIndex: number) => {
+    if (!isReorderEnabled || draggedIndex === null) return;
+    e.preventDefault();
+
+    if (draggedIndex !== targetIndex) {
+      const updated = [...items];
+      const [draggedItem] = updated.splice(draggedIndex, 1);
+      updated.splice(targetIndex, 0, draggedItem);
+
+      // Optimistic local update
+      setItems(updated);
+
+      setLoading(true);
+      const updates = updated.map((item, index) => {
+        return supabase
+          .from("site_collections")
+          .update({ sort_order: index })
+          .eq("id", item.id);
+      });
+
+      try {
+        const results = await Promise.all(updates);
+        const hasError = results.some((r) => r.error);
+        if (hasError) {
+          toast.error("Failed to save new order in database");
+          load();
+        } else {
+          toast.success("Awards order updated successfully");
+        }
+      } catch (err) {
+        console.error("Failed to update order:", err);
+        toast.error("Error updating order");
+        load();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="font-serif text-3xl font-bold text-foreground">
+            Site Awards
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Manage company awards, certificates, and achievements showcased on
+            the website.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {isReorderEnabled && items.length > 1 && (
+            <span className="text-xs text-muted-foreground hidden sm:inline-block">
+              Drag rows to reorder awards
+            </span>
+          )}
+          <Button onClick={() => setEditing("new")} size="sm">
+            <Plus size={14} className="mr-1" /> New Award
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 md:flex-row md:items-center">
+        <div className="relative md:max-w-sm md:flex-1">
+          <Search
+            size={16}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+          />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search awards…"
+            className="pl-9"
+          />
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-border bg-card">
+        {loading && items.length === 0 ? (
+          <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
+            <Loader2 className="mr-2 animate-spin" size={16} /> Loading awards…
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            No awards found.
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {isReorderEnabled && <TableHead className="w-10"></TableHead>}
+                <TableHead className="w-20">Image</TableHead>
+                <TableHead>Award Title</TableHead>
+                <TableHead>Awarding Body / Year</TableHead>
+                <TableHead>Gallery</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((t, idx) => (
+                <TableRow
+                  key={t.id}
+                  draggable={isReorderEnabled}
+                  onDragStart={(e) => handleDragStart(e, idx)}
+                  onDragOver={(e) => handleDragOver(e, idx)}
+                  onDrop={(e) => handleDrop(e, idx)}
+                  onDragEnd={handleDragEnd}
+                  className={cn(
+                    isReorderEnabled && "transition-colors duration-150",
+                    draggedIndex === idx && "opacity-45 bg-muted/40",
+                    dragOverIndex === idx && "border-t-2 border-primary/50",
+                  )}
+                >
+                  {isReorderEnabled && (
+                    <TableCell className="w-10 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
+                      <GripVertical size={16} />
+                    </TableCell>
+                  )}
+                  <TableCell>
+                    {t.image_url ? (
+                      <div className="h-10 w-10 overflow-hidden rounded border border-border bg-muted flex items-center justify-center">
+                        <img
+                          src={getDirectImageUrl(t.image_url)}
+                          alt={t.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-10 w-10 rounded border border-dashed border-border flex items-center justify-center text-muted-foreground bg-muted/20">
+                        <Trophy size={14} />
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-semibold text-foreground">
+                    {t.title}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {t.subtitle || "—"}
+                  </TableCell>
+                  <TableCell className="text-xs text-muted-foreground font-medium">
+                    {t.metadata?.gallery?.length || 0} images
+                  </TableCell>
+                  <TableCell>
+                    {t.is_published ? (
+                      <Badge variant="outline">Published</Badge>
+                    ) : (
+                      <Badge variant="secondary">Draft</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setEditing(t)}
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      {isAdmin && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setConfirmDelete(t)}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </div>
+
+      {editing && (
+        <AwardEditor
+          award={editing === "new" ? null : editing}
+          onClose={() => setEditing(null)}
+          onSaved={() => {
+            setEditing(null);
+            load();
+          }}
+        />
+      )}
+
+      <AlertDialog
+        open={confirmDelete !== null}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this award?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will permanently delete this award.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
+function AwardEditor({
+  award,
+  onClose,
+  onSaved,
+}: {
+  award: any | null;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const isNew = award === null;
+  const [title, setTitle] = useState(award?.title ?? "");
+  const [itemKey, setItemKey] = useState(award?.item_key ?? "");
+  const [subtitle, setSubtitle] = useState(award?.subtitle ?? "");
+  const [description, setDescription] = useState(award?.description ?? "");
+  const [imageUrl, setImageUrl] = useState(award?.image_url ?? "");
+  const [published, setPublished] = useState(award?.is_published ?? true);
+  const [gallery, setGallery] = useState<string[]>(
+    award?.metadata?.gallery ?? [],
+  );
+
+  const [saving, setSaving] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+
+  const coverFileRef = useRef<HTMLInputElement>(null);
+  const galleryFileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isNew) setItemKey(slugify(title));
+  }, [title, isNew]);
+
+  const handleCoverUpload = async (file: File) => {
+    if (!file) return;
+    const slugBase = itemKey || slugify(title) || `award-${Date.now()}`;
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const path = `awards-covers/${slugBase}-${Date.now()}.${ext}`;
+
+    setCoverUploading(true);
+    try {
+      const { error: upErr } = await supabase.storage
+        .from("site-media")
+        .upload(path, file, { upsert: false, contentType: file.type });
+
+      if (upErr) {
+        toast.error("Upload failed: " + upErr.message);
+      } else {
+        const { data: pub } = supabase.storage
+          .from("site-media")
+          .getPublicUrl(path);
+        setImageUrl(pub.publicUrl);
+        toast.success("Cover image uploaded");
+      }
+    } catch (e) {
+      toast.error("Failed to upload image");
+    } finally {
+      setCoverUploading(false);
+    }
+  };
+
+  const handleGalleryUpload = async (files: FileList) => {
+    if (!files.length) return;
+    setGalleryUploading(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const slugBase = itemKey || slugify(title) || `award-${Date.now()}`;
+        const ext = file.name.split(".").pop() ?? "jpg";
+        const path = `awards-gallery/${slugBase}-${Date.now()}-${i}.${ext}`;
+
+        const { error: upErr } = await supabase.storage
+          .from("site-media")
+          .upload(path, file, { upsert: false, contentType: file.type });
+
+        if (upErr) {
+          toast.error(`Failed to upload ${file.name}: ${upErr.message}`);
+        } else {
+          const { data: pub } = supabase.storage
+            .from("site-media")
+            .getPublicUrl(path);
+          uploadedUrls.push(pub.publicUrl);
+        }
+      }
+
+      setGallery((prev) => [...prev, ...uploadedUrls]);
+      toast.success("Gallery images uploaded successfully");
+    } catch (e) {
+      toast.error("An error occurred during gallery upload");
+    } finally {
+      setGalleryUploading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!title.trim()) {
+      toast.error("Award title is required");
+      return;
+    }
+
+    setSaving(true);
+    const payload = {
+      collection_key: "awards",
+      item_key: itemKey || slugify(title) || `award-${Date.now()}`,
+      title,
+      subtitle: subtitle || null,
+      description: description || null,
+      image_url: imageUrl || null,
+      is_published: published,
+      metadata: {
+        gallery,
+      },
+      sort_order: award?.sort_order ?? 0,
+    };
+
+    try {
+      const res = isNew
+        ? await supabase.from("site_collections").insert([payload])
+        : await supabase
+            .from("site_collections")
+            .update(payload)
+            .eq("id", award!.id);
+
+      if (res.error) {
+        toast.error("Could not save award: " + res.error.message);
+      } else {
+        toast.success("Award saved successfully");
+        logAudit({
+          action_type: isNew ? "CREATE" : "UPDATE",
+          resource_type: "award",
+          resource_name: title,
+        });
+        onSaved();
+      }
+    } catch (e) {
+      toast.error("An error occurred saving award");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto rounded-2xl border-none shadow-2xl p-0 bg-card">
+        <div className="bg-muted px-8 py-6 border-b border-border rounded-t-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-3xl font-bold tracking-tight text-foreground">
+              {isNew ? "Add New Award" : "Edit Award"}
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-base">
+              Fill in the award details and gallery photos below.
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        <div className="space-y-6 px-8 py-8">
+          {/* Title & Slug */}
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-foreground">
+                Award Title <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. Best Business Advisory firm"
+                className="h-11 rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-bold text-foreground">
+                Slug / Key
+              </Label>
+              <Input
+                value={itemKey}
+                onChange={(e) => setItemKey(e.target.value)}
+                placeholder="e.g. best-business-advisory-firm"
+                className="h-11 rounded-xl"
+              />
+            </div>
+          </div>
+
+          {/* Subtitle / Awarding Body & Year */}
+          <div className="space-y-2">
+            <Label className="text-sm font-bold text-foreground">
+              Awarding Body & Year
+            </Label>
+            <Input
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              placeholder="e.g. Ghana Business Awards 2026"
+              className="h-11 rounded-xl"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2">
+            <Label className="text-sm font-bold text-foreground">
+              Description
+            </Label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="flex w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none ring-ring/30 focus:ring-2 focus:border-primary transition-all"
+              placeholder="Enter a description of why the award was won or the ceremony context…"
+            />
+          </div>
+
+          {/* Cover Image */}
+          <div className="space-y-3">
+            <Label className="text-sm font-bold text-foreground">
+              Cover Image
+            </Label>
+            <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-border p-6 bg-muted/30">
+              {imageUrl ? (
+                <div className="relative group mx-auto h-40 w-full max-w-sm overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                  <img
+                    src={getDirectImageUrl(imageUrl)}
+                    alt="Cover preview"
+                    className="h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => coverFileRef.current?.click()}
+                      className="rounded-full h-10 w-10 p-0"
+                    >
+                      <Upload size={18} />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => coverFileRef.current?.click()}
+                  className="flex flex-col items-center justify-center h-40 rounded-xl bg-card border border-border shadow-sm hover:border-primary/50 transition-all group"
+                >
+                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary group-hover:scale-110 transition-transform">
+                    {coverUploading ? (
+                      <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                      <Upload size={20} />
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Upload cover image
+                  </span>
+                </button>
+              )}
+
+              <input
+                ref={coverFileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleCoverUpload(f);
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Gallery Pictures */}
+          <div className="space-y-3">
+            <Label className="text-sm font-bold text-foreground">
+              Photo Gallery (Multiple Images)
+            </Label>
+            <div className="rounded-2xl border border-dashed border-border p-6 bg-muted/30">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {gallery.map((url, idx) => (
+                  <div
+                    key={idx}
+                    className="relative group aspect-square rounded-xl overflow-hidden border border-border bg-card shadow-sm"
+                  >
+                    <img
+                      src={getDirectImageUrl(url)}
+                      alt={`Gallery item ${idx}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setGallery((prev) => prev.filter((_, i) => i !== idx))
+                      }
+                      className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-200"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => galleryFileRef.current?.click()}
+                  disabled={galleryUploading}
+                  className="flex flex-col items-center justify-center border border-dashed border-border rounded-xl hover:border-primary/50 transition-colors bg-card shadow-sm hover:bg-muted/10 aspect-square"
+                >
+                  {galleryUploading ? (
+                    <Loader2 className="animate-spin text-primary" size={20} />
+                  ) : (
+                    <>
+                      <Plus size={20} className="text-muted-foreground" />
+                      <span className="text-[10px] text-muted-foreground font-semibold mt-1">
+                        Add Image
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <input
+                ref={galleryFileRef}
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files) handleGalleryUpload(files);
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Visibility Checkbox */}
+          <div className="flex items-center gap-3 p-4 rounded-xl bg-muted border border-border">
+            <input
+              id="pub-award"
+              type="checkbox"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+              className="h-5 w-5 rounded-lg border-slate-300 text-primary focus:ring-primary/20"
+            />
+            <Label
+              htmlFor="pub-award"
+              className="text-sm font-semibold text-foreground cursor-pointer select-none"
+            >
+              Published
+              <span className="text-muted-foreground font-normal ml-1">
+                — Visible on the awards showcase page
+              </span>
+            </Label>
+          </div>
+        </div>
+
+        <div className="px-8 py-6 bg-muted border-t border-border flex justify-end gap-3 rounded-b-2xl">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            disabled={saving}
+            className="rounded-xl px-6 h-11 border-border"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="rounded-xl px-8 h-11 shadow-lg shadow-primary/20"
+          >
+            {saving ? (
+              <Loader2 className="animate-spin mr-2" size={18} />
+            ) : null}
+            {isNew ? "Create Award" : "Save Changes"}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function BannerAdmin() {
+  const [id, setId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [isPublished, setIsPublished] = useState(true);
+  const [title, setTitle] = useState("to download the 2026 training calendar");
+  const [linkLabel, setLinkLabel] = useState("Click here");
+  const [linkUrl, setLinkUrl] = useState("/brochures/2026-training-brochure");
+  const [bgType, setBgType] = useState<"solid" | "gradient">("gradient");
+  const [bgSolidColor, setBgSolidColor] = useState("#0c1e36");
+  const [bgGradientStart, setBgGradientStart] = useState("#0c1e36");
+  const [bgGradientVia, setBgGradientVia] = useState("#1e3a5f");
+  const [bgGradientEnd, setBgGradientEnd] = useState("#14b8a6");
+  const [textColor, setTextColor] = useState("#ffffff");
+  const [accentColor, setAccentColor] = useState("#14b8a6");
+
+  const loadBanner = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("site_collections")
+        .select("*")
+        .eq("collection_key", "site-banner")
+        .eq("item_key", "main-banner")
+        .maybeSingle();
+
+      if (error) {
+        toast.error("Could not load banner settings");
+      } else if (data) {
+        setId(data.id);
+        setIsPublished(data.is_published);
+        setTitle(data.title || "");
+        setLinkLabel(data.link_label || "");
+        setLinkUrl(data.link_url || "");
+
+        const meta = (data.metadata || {}) as any;
+        setBgType(meta.bg_type || "gradient");
+        setBgSolidColor(meta.bg_solid_color || "#0c1e36");
+        setBgGradientStart(meta.bg_gradient_start || "#0c1e36");
+        setBgGradientVia(meta.bg_gradient_via || "#1e3a5f");
+        setBgGradientEnd(meta.bg_gradient_end || "#14b8a6");
+        setTextColor(meta.text_color || "#ffffff");
+        setAccentColor(meta.accent_color || "#14b8a6");
+      }
+    } catch (e) {
+      toast.error("An error occurred loading banner");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBanner();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+
+    const payload = {
+      collection_key: "site-banner",
+      item_key: "main-banner",
+      title,
+      link_label: linkLabel,
+      link_url: linkUrl,
+      is_published: isPublished,
+      metadata: {
+        bg_type: bgType,
+        bg_solid_color: bgSolidColor,
+        bg_gradient_start: bgGradientStart,
+        bg_gradient_via: bgGradientVia,
+        bg_gradient_end: bgGradientEnd,
+        text_color: textColor,
+        accent_color: accentColor,
+      },
+      sort_order: 0,
+    };
+
+    try {
+      let error;
+      if (id) {
+        const { error: err } = await supabase
+          .from("site_collections")
+          .update(payload)
+          .eq("id", id);
+        error = err;
+      } else {
+        const { data, error: err } = await supabase
+          .from("site_collections")
+          .insert([payload])
+          .select()
+          .maybeSingle();
+        if (data) setId(data.id);
+        error = err;
+      }
+
+      if (error) {
+        toast.error("Failed to save banner settings");
+      } else {
+        toast.success("Banner settings saved successfully");
+        logAudit({
+          action_type: id ? "UPDATE" : "CREATE",
+          resource_type: "site-banner",
+          resource_name: "Main Banner",
+          details: payload,
+        });
+      }
+    } catch (e) {
+      toast.error("Failed to save banner");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const applyPreset = (preset: (typeof PRESETS)[0]) => {
+    setBgType(preset.bgType);
+    setBgSolidColor(preset.bgSolidColor);
+    setBgGradientStart(preset.bgGradientStart);
+    setBgGradientVia(preset.bgGradientVia);
+    setBgGradientEnd(preset.bgGradientEnd);
+    setTextColor(preset.textColor);
+    setAccentColor(preset.accentColor);
+    toast.success(`Applied "${preset.name}" preset`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Generate live preview styles
+  const previewStyle = {
+    background:
+      bgType === "gradient"
+        ? `linear-gradient(to right, ${bgGradientStart}, ${bgGradientVia}, ${bgGradientEnd})`
+        : bgSolidColor,
+    color: textColor,
+    "--banner-accent": accentColor,
+  } as React.CSSProperties;
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="font-serif text-3xl font-bold text-foreground">
+            Promotional Banner
+          </h2>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Manage the announcements bar that appears at the top of the header.
+          </p>
+        </div>
+      </div>
+
+      {/* Live Preview */}
+      <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+        <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+          <Monitor size={16} className="text-primary" /> Live Preview
+        </h3>
+
+        <div className="border border-border/80 rounded-xl overflow-hidden bg-background p-4 relative min-h-[120px] flex flex-col justify-center">
+          <p className="text-[10px] uppercase font-bold text-muted-foreground mb-2 absolute top-2 left-4">
+            Website Top Area View
+          </p>
+
+          {isPublished ? (
+            <div
+              style={previewStyle}
+              className="py-3 px-4 text-center text-xs sm:text-sm font-medium rounded-lg shadow-sm transition-all duration-300"
+            >
+              <span
+                style={{ color: "var(--banner-accent)" }}
+                className="underline decoration-2 underline-offset-2 font-bold cursor-pointer hover:opacity-85 transition-opacity"
+              >
+                {linkLabel || "Click here"}
+              </span>{" "}
+              {title || "to download the calendar"}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-sm text-muted-foreground border border-dashed border-border rounded-lg bg-muted/20">
+              Banner is currently inactive / hidden.
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-8 md:grid-cols-3">
+        {/* Presets Column */}
+        <div className="md:col-span-1 space-y-6">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm">
+            <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
+              <SwatchBook size={16} className="text-primary" /> Preset Colors
+            </h3>
+            <p className="text-xs text-muted-foreground mb-4">
+              Select one of our curated high-contrast styles.
+            </p>
+            <div className="space-y-2">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.name}
+                  type="button"
+                  onClick={() => applyPreset(p)}
+                  className="w-full flex items-center justify-between p-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all text-left group"
+                >
+                  <span className="text-xs font-semibold text-foreground group-hover:text-primary">
+                    {p.name}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {p.bgType === "gradient" ? (
+                      <div className="flex gap-0.5">
+                        <div
+                          className="w-3 h-3 rounded-full border border-white/20"
+                          style={{ backgroundColor: p.bgGradientStart }}
+                        />
+                        <div
+                          className="w-3 h-3 rounded-full border border-white/20"
+                          style={{ backgroundColor: p.bgGradientVia }}
+                        />
+                        <div
+                          className="w-3 h-3 rounded-full border border-white/20"
+                          style={{ backgroundColor: p.bgGradientEnd }}
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        className="w-6 h-3 rounded border border-white/20"
+                        style={{ backgroundColor: p.bgSolidColor }}
+                      />
+                    )}
+                    <div
+                      className="w-3.5 h-3.5 rounded-full border border-border flex items-center justify-center text-[8px] font-bold"
+                      style={{
+                        backgroundColor: p.textColor,
+                        color: p.accentColor,
+                      }}
+                    >
+                      A
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Edit Form Column */}
+        <form onSubmit={handleSave} className="md:col-span-2 space-y-6">
+          <div className="rounded-3xl border border-border bg-card p-8 shadow-sm space-y-6">
+            <h3 className="font-bold text-foreground flex items-center gap-2 border-b border-border pb-4">
+              <Settings size={16} className="text-primary" /> Configuration
+            </h3>
+
+            {/* Visibility Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label className="text-sm font-bold">Active Status</Label>
+                <p className="text-xs text-muted-foreground">
+                  Control if the banner is visible to visitors.
+                </p>
+              </div>
+              <Switch checked={isPublished} onCheckedChange={setIsPublished} />
+            </div>
+
+            {/* Link Label & Link URL */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Link Text
+                </Label>
+                <input
+                  type="text"
+                  required
+                  value={linkLabel}
+                  onChange={(e) => setLinkLabel(e.target.value)}
+                  placeholder="e.g. Click here"
+                  className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Link Target URL
+                </Label>
+                <input
+                  type="text"
+                  required
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="e.g. /brochures/2026-training-brochure"
+                  className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+            </div>
+
+            {/* Statement Text */}
+            <div className="space-y-2">
+              <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Statement Text
+              </Label>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g. to download the 2026 training calendar"
+                className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+
+            {/* Background Style */}
+            <div className="space-y-4 pt-4 border-t border-border">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-bold">Background Style</Label>
+                <div className="flex rounded-lg bg-muted p-1 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setBgType("solid")}
+                    className={cn(
+                      "px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                      bgType === "solid"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    Solid Color
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBgType("gradient")}
+                    className={cn(
+                      "px-3 py-1.5 text-xs font-semibold rounded-md transition-all",
+                      bgType === "gradient"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    Gradient
+                  </button>
+                </div>
+              </div>
+
+              {bgType === "solid" ? (
+                <div className="space-y-2">
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    Background Color
+                  </Label>
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={bgSolidColor}
+                      onChange={(e) => setBgSolidColor(e.target.value)}
+                      className="h-11 w-20 rounded-xl border border-border bg-background p-1 cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={bgSolidColor}
+                      onChange={(e) => setBgSolidColor(e.target.value)}
+                      className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Start Color
+                    </Label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={bgGradientStart}
+                        onChange={(e) => setBgGradientStart(e.target.value)}
+                        className="h-9 w-12 rounded-lg border border-border bg-background p-1 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={bgGradientStart}
+                        onChange={(e) => setBgGradientStart(e.target.value)}
+                        className="h-9 w-full rounded-lg border border-border bg-background px-2 text-xs text-foreground"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      Middle Color
+                    </Label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={bgGradientVia}
+                        onChange={(e) => setBgGradientVia(e.target.value)}
+                        className="h-9 w-12 rounded-lg border border-border bg-background p-1 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={bgGradientVia}
+                        onChange={(e) => setBgGradientVia(e.target.value)}
+                        className="h-9 w-full rounded-lg border border-border bg-background px-2 text-xs text-foreground"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      End Color
+                    </Label>
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="color"
+                        value={bgGradientEnd}
+                        onChange={(e) => setBgGradientEnd(e.target.value)}
+                        className="h-9 w-12 rounded-lg border border-border bg-background p-1 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={bgGradientEnd}
+                        onChange={(e) => setBgGradientEnd(e.target.value)}
+                        className="h-9 w-full rounded-lg border border-border bg-background px-2 text-xs text-foreground"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Colors: Text & Accent */}
+            <div className="grid gap-4 sm:grid-cols-2 pt-4 border-t border-border">
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Text Color
+                </Label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="color"
+                    value={textColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    className="h-11 w-20 rounded-xl border border-border bg-background p-1 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={textColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Link / Accent Color
+                </Label>
+                <div className="flex gap-3 items-center">
+                  <input
+                    type="color"
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                    className="h-11 w-20 rounded-xl border border-border bg-background p-1 cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    value={accentColor}
+                    onChange={(e) => setAccentColor(e.target.value)}
+                    className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm text-foreground"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Save Button */}
+            <div className="pt-4 border-t border-border flex justify-end">
+              <button
+                type="submit"
+                disabled={saving}
+                className="interactive-lift inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 disabled:opacity-50"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Saving...
+                  </>
+                ) : (
+                  "Save Settings"
+                )}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+const PRESETS = [
+  {
+    name: "JPCann Corporate (Navy/Teal)",
+    bgType: "gradient" as const,
+    bgSolidColor: "#0c1e36",
+    bgGradientStart: "#0c1e36",
+    bgGradientVia: "#1e3a5f",
+    bgGradientEnd: "#14b8a6",
+    textColor: "#ffffff",
+    accentColor: "#2dd4bf",
+  },
+  {
+    name: "Midnight Luxury (Black/Gold)",
+    bgType: "gradient" as const,
+    bgSolidColor: "#020617",
+    bgGradientStart: "#090d16",
+    bgGradientVia: "#1e1b4b",
+    bgGradientEnd: "#090d16",
+    textColor: "#f8fafc",
+    accentColor: "#f59e0b",
+  },
+  {
+    name: "Crimson Blaze (Red/Orange)",
+    bgType: "gradient" as const,
+    bgSolidColor: "#7f1d1d",
+    bgGradientStart: "#7f1d1d",
+    bgGradientVia: "#9a3412",
+    bgGradientEnd: "#c2410c",
+    textColor: "#ffffff",
+    accentColor: "#fde047",
+  },
+  {
+    name: "Emerald Forest (Green/Lime)",
+    bgType: "gradient" as const,
+    bgSolidColor: "#064e3b",
+    bgGradientStart: "#064e3b",
+    bgGradientVia: "#047857",
+    bgGradientEnd: "#0f766e",
+    textColor: "#ffffff",
+    accentColor: "#84cc16",
+  },
+  {
+    name: "Sky Breeze (Light Blue)",
+    bgType: "solid" as const,
+    bgSolidColor: "#f0f9ff",
+    bgGradientStart: "#f0f9ff",
+    bgGradientVia: "#e0f2fe",
+    bgGradientEnd: "#bae6fd",
+    textColor: "#0369a1",
+    accentColor: "#0284c7",
+  },
+];
 
 function SettingsAdmin() {
   const {

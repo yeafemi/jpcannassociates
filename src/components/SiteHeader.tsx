@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Menu,
   X,
@@ -9,6 +9,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import logo from "@/assets/jpcann-logo.png";
+import { supabase } from "@/integrations/supabase/client";
 
 const nav = [
   {
@@ -19,6 +20,7 @@ const nav = [
       { to: "/staff", label: "Staff" },
       { to: "/facilitators", label: "Facilitators" },
       { to: "/approach", label: "Our Approach" },
+      { to: "/awards", label: "Awards" },
       { to: "/careers", label: "Careers" },
     ],
   },
@@ -35,17 +37,129 @@ const nav = [
   },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/trainings", label: "Trainings" },
+  {
+    label: "Resources",
+    submenu: [
+      { to: "/brochures", label: "Training Brochures" },
+      { to: "/ebooks", label: "E-books" },
+      { to: "/blogs", label: "Blogs" },
+    ],
+  },
   { to: "/contact", label: "Contact" },
-  { to: "/ebooks", label: "E-books" },
-  { to: "/blogs", label: "Blogs" },
 ];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [hoveredMenu, setHoveredMenu] = useState<string | null>(null);
 
+  // Dynamic Banner State with 2026 calendar defaults
+  const [banner, setBanner] = useState<{
+    isPublished: boolean;
+    title: string;
+    linkLabel: string;
+    linkUrl: string;
+    bgType: "solid" | "gradient";
+    bgSolidColor: string;
+    bgGradientStart: string;
+    bgGradientVia: string;
+    bgGradientEnd: string;
+    textColor: string;
+    accentColor: string;
+  }>({
+    isPublished: true,
+    title: "to download the 2026 training calendar",
+    linkLabel: "Click here",
+    linkUrl: "/brochures/2026-training-brochure",
+    bgType: "gradient",
+    bgSolidColor: "#0c1e36",
+    bgGradientStart: "#0c1e36",
+    bgGradientVia: "#1e3a5f",
+    bgGradientEnd: "#14b8a6",
+    textColor: "#ffffff",
+    accentColor: "#14b8a6",
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_collections")
+          .select("*")
+          .eq("collection_key", "site-banner")
+          .eq("item_key", "main-banner")
+          .maybeSingle();
+
+        if (!error && data && !cancelled) {
+          const meta = (data.metadata || {}) as any;
+          setBanner({
+            isPublished: data.is_published,
+            title: data.title || "",
+            linkLabel: data.link_label || "",
+            linkUrl: data.link_url || "",
+            bgType: meta.bg_type || "gradient",
+            bgSolidColor: meta.bg_solid_color || "#0c1e36",
+            bgGradientStart: meta.bg_gradient_start || "#0c1e36",
+            bgGradientVia: meta.bg_gradient_via || "#1e3a5f",
+            bgGradientEnd: meta.bg_gradient_end || "#14b8a6",
+            textColor: meta.text_color || "#ffffff",
+            accentColor: meta.accent_color || "#14b8a6",
+          });
+        }
+      } catch (e) {
+        console.error("Error loading header banner", e);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const isExternal =
+    banner.linkUrl.startsWith("http://") ||
+    banner.linkUrl.startsWith("https://") ||
+    banner.linkUrl.startsWith("//");
+
+  const bannerStyle = {
+    background:
+      banner.bgType === "gradient"
+        ? `linear-gradient(to right, ${banner.bgGradientStart}, ${banner.bgGradientVia}, ${banner.bgGradientEnd})`
+        : banner.bgSolidColor,
+    color: banner.textColor,
+    "--banner-accent": banner.accentColor,
+  } as React.CSSProperties;
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md">
+      {/* Promotional Banner */}
+      {banner.isPublished && (
+        <div
+          style={bannerStyle}
+          className="relative z-50 px-4 py-2.5 text-center text-xs sm:text-sm font-medium shadow-sm transition-all duration-300"
+        >
+          {isExternal ? (
+            <a
+              href={banner.linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "var(--banner-accent)" }}
+              className="font-semibold underline decoration-2 underline-offset-2 transition-colors duration-250 hover:opacity-85"
+            >
+              {banner.linkLabel}
+            </a>
+          ) : (
+            <Link
+              to={banner.linkUrl as any}
+              style={{ color: "var(--banner-accent)" }}
+              className="font-semibold underline decoration-2 underline-offset-2 transition-colors duration-250 hover:opacity-85"
+            >
+              {banner.linkLabel}
+            </Link>
+          )}{" "}
+          {banner.title}
+        </div>
+      )}
+
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2">
           <img

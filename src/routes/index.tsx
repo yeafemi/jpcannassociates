@@ -223,11 +223,17 @@ function Index() {
     : stats;
 
   const displayAccreditations = dbAccreditations?.length
-    ? dbAccreditations.map((a) => ({ src: getDirectImageUrl(a.image_url), alt: a.title }))
+    ? dbAccreditations.map((a) => ({
+        src: getDirectImageUrl(a.image_url),
+        alt: a.title,
+      }))
     : accreditations;
 
   const displayClientele = dbClientele?.length
-    ? dbClientele.map((c) => ({ src: getDirectImageUrl(c.image_url), alt: c.title }))
+    ? dbClientele.map((c) => ({
+        src: getDirectImageUrl(c.image_url),
+        alt: c.title,
+      }))
     : clientele;
 
   React.useEffect(() => {
@@ -447,7 +453,14 @@ function Index() {
                       >
                         <Reveal
                           variant="up"
-                          delay={String(Math.min(i, 4)) as "0" | "1" | "2" | "3" | "4"}
+                          delay={
+                            String(Math.min(i, 4)) as
+                              | "0"
+                              | "1"
+                              | "2"
+                              | "3"
+                              | "4"
+                          }
                           className="group h-full"
                         >
                           <div className="relative h-full flex flex-col rounded-3xl border border-white/40 bg-white/40 backdrop-blur-md p-10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] transition-all duration-500 hover:bg-white/60 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden">

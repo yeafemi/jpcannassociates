@@ -20,7 +20,9 @@ import { Route as EbooksRouteImport } from './routes/ebooks'
 import { Route as CorporateTrainingRouteImport } from './routes/corporate-training'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CareersRouteImport } from './routes/careers'
+import { Route as BrochuresRouteImport } from './routes/brochures'
 import { Route as BlogsRouteImport } from './routes/blogs'
+import { Route as AwardsRouteImport } from './routes/awards'
 import { Route as ApproachRouteImport } from './routes/approach'
 import { Route as AdvisoryRouteImport } from './routes/advisory'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -28,10 +30,16 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrainingsIndexRouteImport } from './routes/trainings.index'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
+import { Route as EbooksIndexRouteImport } from './routes/ebooks.index'
+import { Route as BrochuresIndexRouteImport } from './routes/brochures.index'
 import { Route as BlogsIndexRouteImport } from './routes/blogs.index'
+import { Route as AwardsIndexRouteImport } from './routes/awards.index'
 import { Route as TrainingsSlugRouteImport } from './routes/trainings.$slug'
 import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
+import { Route as EbooksSlugRouteImport } from './routes/ebooks.$slug'
+import { Route as BrochuresSlugRouteImport } from './routes/brochures.$slug'
 import { Route as BlogsSlugRouteImport } from './routes/blogs.$slug'
+import { Route as AwardsSlugRouteImport } from './routes/awards.$slug'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 
 const TrainingsRoute = TrainingsRouteImport.update({
@@ -89,9 +97,19 @@ const CareersRoute = CareersRouteImport.update({
   path: '/careers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BrochuresRoute = BrochuresRouteImport.update({
+  id: '/brochures',
+  path: '/brochures',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogsRoute = BlogsRouteImport.update({
   id: '/blogs',
   path: '/blogs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AwardsRoute = AwardsRouteImport.update({
+  id: '/awards',
+  path: '/awards',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApproachRoute = ApproachRouteImport.update({
@@ -129,10 +147,25 @@ const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PortfolioRoute,
 } as any)
+const EbooksIndexRoute = EbooksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EbooksRoute,
+} as any)
+const BrochuresIndexRoute = BrochuresIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => BrochuresRoute,
+} as any)
 const BlogsIndexRoute = BlogsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => BlogsRoute,
+} as any)
+const AwardsIndexRoute = AwardsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AwardsRoute,
 } as any)
 const TrainingsSlugRoute = TrainingsSlugRouteImport.update({
   id: '/$slug',
@@ -144,10 +177,25 @@ const PortfolioSlugRoute = PortfolioSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => PortfolioRoute,
 } as any)
+const EbooksSlugRoute = EbooksSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => EbooksRoute,
+} as any)
+const BrochuresSlugRoute = BrochuresSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BrochuresRoute,
+} as any)
 const BlogsSlugRoute = BlogsSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogsRoute,
+} as any)
+const AwardsSlugRoute = AwardsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AwardsRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
@@ -161,11 +209,13 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/advisory': typeof AdvisoryRoute
   '/approach': typeof ApproachRoute
+  '/awards': typeof AwardsRouteWithChildren
   '/blogs': typeof BlogsRouteWithChildren
+  '/brochures': typeof BrochuresRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/corporate-training': typeof CorporateTrainingRoute
-  '/ebooks': typeof EbooksRoute
+  '/ebooks': typeof EbooksRouteWithChildren
   '/facilitators': typeof FacilitatorsRoute
   '/iso': typeof IsoRoute
   '/management': typeof ManagementRoute
@@ -174,10 +224,16 @@ export interface FileRoutesByFullPath {
   '/staff': typeof StaffRoute
   '/trainings': typeof TrainingsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/awards/$slug': typeof AwardsSlugRoute
   '/blogs/$slug': typeof BlogsSlugRoute
+  '/brochures/$slug': typeof BrochuresSlugRoute
+  '/ebooks/$slug': typeof EbooksSlugRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/trainings/$slug': typeof TrainingsSlugRoute
+  '/awards/': typeof AwardsIndexRoute
   '/blogs/': typeof BlogsIndexRoute
+  '/brochures/': typeof BrochuresIndexRoute
+  '/ebooks/': typeof EbooksIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/trainings/': typeof TrainingsIndexRoute
 }
@@ -190,17 +246,22 @@ export interface FileRoutesByTo {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/corporate-training': typeof CorporateTrainingRoute
-  '/ebooks': typeof EbooksRoute
   '/facilitators': typeof FacilitatorsRoute
   '/iso': typeof IsoRoute
   '/management': typeof ManagementRoute
   '/outsourcing': typeof OutsourcingRoute
   '/staff': typeof StaffRoute
   '/admin/login': typeof AdminLoginRoute
+  '/awards/$slug': typeof AwardsSlugRoute
   '/blogs/$slug': typeof BlogsSlugRoute
+  '/brochures/$slug': typeof BrochuresSlugRoute
+  '/ebooks/$slug': typeof EbooksSlugRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/trainings/$slug': typeof TrainingsSlugRoute
+  '/awards': typeof AwardsIndexRoute
   '/blogs': typeof BlogsIndexRoute
+  '/brochures': typeof BrochuresIndexRoute
+  '/ebooks': typeof EbooksIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/trainings': typeof TrainingsIndexRoute
 }
@@ -211,11 +272,13 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/advisory': typeof AdvisoryRoute
   '/approach': typeof ApproachRoute
+  '/awards': typeof AwardsRouteWithChildren
   '/blogs': typeof BlogsRouteWithChildren
+  '/brochures': typeof BrochuresRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/corporate-training': typeof CorporateTrainingRoute
-  '/ebooks': typeof EbooksRoute
+  '/ebooks': typeof EbooksRouteWithChildren
   '/facilitators': typeof FacilitatorsRoute
   '/iso': typeof IsoRoute
   '/management': typeof ManagementRoute
@@ -224,10 +287,16 @@ export interface FileRoutesById {
   '/staff': typeof StaffRoute
   '/trainings': typeof TrainingsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
+  '/awards/$slug': typeof AwardsSlugRoute
   '/blogs/$slug': typeof BlogsSlugRoute
+  '/brochures/$slug': typeof BrochuresSlugRoute
+  '/ebooks/$slug': typeof EbooksSlugRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/trainings/$slug': typeof TrainingsSlugRoute
+  '/awards/': typeof AwardsIndexRoute
   '/blogs/': typeof BlogsIndexRoute
+  '/brochures/': typeof BrochuresIndexRoute
+  '/ebooks/': typeof EbooksIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/trainings/': typeof TrainingsIndexRoute
 }
@@ -239,7 +308,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/advisory'
     | '/approach'
+    | '/awards'
     | '/blogs'
+    | '/brochures'
     | '/careers'
     | '/contact'
     | '/corporate-training'
@@ -252,10 +323,16 @@ export interface FileRouteTypes {
     | '/staff'
     | '/trainings'
     | '/admin/login'
+    | '/awards/$slug'
     | '/blogs/$slug'
+    | '/brochures/$slug'
+    | '/ebooks/$slug'
     | '/portfolio/$slug'
     | '/trainings/$slug'
+    | '/awards/'
     | '/blogs/'
+    | '/brochures/'
+    | '/ebooks/'
     | '/portfolio/'
     | '/trainings/'
   fileRoutesByTo: FileRoutesByTo
@@ -268,17 +345,22 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/corporate-training'
-    | '/ebooks'
     | '/facilitators'
     | '/iso'
     | '/management'
     | '/outsourcing'
     | '/staff'
     | '/admin/login'
+    | '/awards/$slug'
     | '/blogs/$slug'
+    | '/brochures/$slug'
+    | '/ebooks/$slug'
     | '/portfolio/$slug'
     | '/trainings/$slug'
+    | '/awards'
     | '/blogs'
+    | '/brochures'
+    | '/ebooks'
     | '/portfolio'
     | '/trainings'
   id:
@@ -288,7 +370,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/advisory'
     | '/approach'
+    | '/awards'
     | '/blogs'
+    | '/brochures'
     | '/careers'
     | '/contact'
     | '/corporate-training'
@@ -301,10 +385,16 @@ export interface FileRouteTypes {
     | '/staff'
     | '/trainings'
     | '/admin/login'
+    | '/awards/$slug'
     | '/blogs/$slug'
+    | '/brochures/$slug'
+    | '/ebooks/$slug'
     | '/portfolio/$slug'
     | '/trainings/$slug'
+    | '/awards/'
     | '/blogs/'
+    | '/brochures/'
+    | '/ebooks/'
     | '/portfolio/'
     | '/trainings/'
   fileRoutesById: FileRoutesById
@@ -315,11 +405,13 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AdvisoryRoute: typeof AdvisoryRoute
   ApproachRoute: typeof ApproachRoute
+  AwardsRoute: typeof AwardsRouteWithChildren
   BlogsRoute: typeof BlogsRouteWithChildren
+  BrochuresRoute: typeof BrochuresRouteWithChildren
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   CorporateTrainingRoute: typeof CorporateTrainingRoute
-  EbooksRoute: typeof EbooksRoute
+  EbooksRoute: typeof EbooksRouteWithChildren
   FacilitatorsRoute: typeof FacilitatorsRoute
   IsoRoute: typeof IsoRoute
   ManagementRoute: typeof ManagementRoute
@@ -408,11 +500,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CareersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/brochures': {
+      id: '/brochures'
+      path: '/brochures'
+      fullPath: '/brochures'
+      preLoaderRoute: typeof BrochuresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blogs': {
       id: '/blogs'
       path: '/blogs'
       fullPath: '/blogs'
       preLoaderRoute: typeof BlogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/awards': {
+      id: '/awards'
+      path: '/awards'
+      fullPath: '/awards'
+      preLoaderRoute: typeof AwardsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/approach': {
@@ -464,12 +570,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioIndexRouteImport
       parentRoute: typeof PortfolioRoute
     }
+    '/ebooks/': {
+      id: '/ebooks/'
+      path: '/'
+      fullPath: '/ebooks/'
+      preLoaderRoute: typeof EbooksIndexRouteImport
+      parentRoute: typeof EbooksRoute
+    }
+    '/brochures/': {
+      id: '/brochures/'
+      path: '/'
+      fullPath: '/brochures/'
+      preLoaderRoute: typeof BrochuresIndexRouteImport
+      parentRoute: typeof BrochuresRoute
+    }
     '/blogs/': {
       id: '/blogs/'
       path: '/'
       fullPath: '/blogs/'
       preLoaderRoute: typeof BlogsIndexRouteImport
       parentRoute: typeof BlogsRoute
+    }
+    '/awards/': {
+      id: '/awards/'
+      path: '/'
+      fullPath: '/awards/'
+      preLoaderRoute: typeof AwardsIndexRouteImport
+      parentRoute: typeof AwardsRoute
     }
     '/trainings/$slug': {
       id: '/trainings/$slug'
@@ -485,12 +612,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioSlugRouteImport
       parentRoute: typeof PortfolioRoute
     }
+    '/ebooks/$slug': {
+      id: '/ebooks/$slug'
+      path: '/$slug'
+      fullPath: '/ebooks/$slug'
+      preLoaderRoute: typeof EbooksSlugRouteImport
+      parentRoute: typeof EbooksRoute
+    }
+    '/brochures/$slug': {
+      id: '/brochures/$slug'
+      path: '/$slug'
+      fullPath: '/brochures/$slug'
+      preLoaderRoute: typeof BrochuresSlugRouteImport
+      parentRoute: typeof BrochuresRoute
+    }
     '/blogs/$slug': {
       id: '/blogs/$slug'
       path: '/$slug'
       fullPath: '/blogs/$slug'
       preLoaderRoute: typeof BlogsSlugRouteImport
       parentRoute: typeof BlogsRoute
+    }
+    '/awards/$slug': {
+      id: '/awards/$slug'
+      path: '/$slug'
+      fullPath: '/awards/$slug'
+      preLoaderRoute: typeof AwardsSlugRouteImport
+      parentRoute: typeof AwardsRoute
     }
     '/admin/login': {
       id: '/admin/login'
@@ -512,6 +660,19 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface AwardsRouteChildren {
+  AwardsSlugRoute: typeof AwardsSlugRoute
+  AwardsIndexRoute: typeof AwardsIndexRoute
+}
+
+const AwardsRouteChildren: AwardsRouteChildren = {
+  AwardsSlugRoute: AwardsSlugRoute,
+  AwardsIndexRoute: AwardsIndexRoute,
+}
+
+const AwardsRouteWithChildren =
+  AwardsRoute._addFileChildren(AwardsRouteChildren)
+
 interface BlogsRouteChildren {
   BlogsSlugRoute: typeof BlogsSlugRoute
   BlogsIndexRoute: typeof BlogsIndexRoute
@@ -523,6 +684,33 @@ const BlogsRouteChildren: BlogsRouteChildren = {
 }
 
 const BlogsRouteWithChildren = BlogsRoute._addFileChildren(BlogsRouteChildren)
+
+interface BrochuresRouteChildren {
+  BrochuresSlugRoute: typeof BrochuresSlugRoute
+  BrochuresIndexRoute: typeof BrochuresIndexRoute
+}
+
+const BrochuresRouteChildren: BrochuresRouteChildren = {
+  BrochuresSlugRoute: BrochuresSlugRoute,
+  BrochuresIndexRoute: BrochuresIndexRoute,
+}
+
+const BrochuresRouteWithChildren = BrochuresRoute._addFileChildren(
+  BrochuresRouteChildren,
+)
+
+interface EbooksRouteChildren {
+  EbooksSlugRoute: typeof EbooksSlugRoute
+  EbooksIndexRoute: typeof EbooksIndexRoute
+}
+
+const EbooksRouteChildren: EbooksRouteChildren = {
+  EbooksSlugRoute: EbooksSlugRoute,
+  EbooksIndexRoute: EbooksIndexRoute,
+}
+
+const EbooksRouteWithChildren =
+  EbooksRoute._addFileChildren(EbooksRouteChildren)
 
 interface PortfolioRouteChildren {
   PortfolioSlugRoute: typeof PortfolioSlugRoute
@@ -558,11 +746,13 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AdvisoryRoute: AdvisoryRoute,
   ApproachRoute: ApproachRoute,
+  AwardsRoute: AwardsRouteWithChildren,
   BlogsRoute: BlogsRouteWithChildren,
+  BrochuresRoute: BrochuresRouteWithChildren,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   CorporateTrainingRoute: CorporateTrainingRoute,
-  EbooksRoute: EbooksRoute,
+  EbooksRoute: EbooksRouteWithChildren,
   FacilitatorsRoute: FacilitatorsRoute,
   IsoRoute: IsoRoute,
   ManagementRoute: ManagementRoute,

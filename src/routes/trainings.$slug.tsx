@@ -63,7 +63,10 @@ export const Route = createFileRoute("/trainings/$slug")({
         ...(t.image_url
           ? [
               { property: "og:image", content: getDirectImageUrl(t.image_url) },
-              { name: "twitter:image", content: getDirectImageUrl(t.image_url) },
+              {
+                name: "twitter:image",
+                content: getDirectImageUrl(t.image_url),
+              },
               { name: "twitter:card", content: "summary_large_image" },
             ]
           : []),
@@ -149,7 +152,9 @@ function TrainingDetailPage() {
           <div
             aria-hidden
             className="absolute inset-0 opacity-30 [background-position:center] [background-size:cover]"
-            style={{ backgroundImage: `url(${getDirectImageUrl(t.image_url)})` }}
+            style={{
+              backgroundImage: `url(${getDirectImageUrl(t.image_url)})`,
+            }}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-foreground/40 via-foreground/30 to-foreground/70" />

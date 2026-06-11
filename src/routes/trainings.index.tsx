@@ -450,11 +450,12 @@ function TrainingCard({
         className="block"
         aria-label={training.title}
       >
-        <div className="relative h-52 overflow-hidden">
+        <div className="relative h-52 overflow-hidden bg-secondary/20">
           <img
             src={getDirectImageUrl(training.image_url)}
             alt={training.title}
-            loading="lazy"
+            loading={index < 6 ? "eager" : "lazy"}
+            fetchPriority={index < 6 ? "high" : "low"}
             className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-foreground/0 to-foreground/0 opacity-60 transition-opacity duration-500 group-hover:opacity-80" />
